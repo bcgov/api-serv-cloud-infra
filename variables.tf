@@ -1,26 +1,14 @@
 //module variables should be defined and documented here.
-
-variable "cloudfront" {
-  description = "enable or disable the cloudfront distrabution creation"
-  type        = bool
-}
-
-variable "cloudfront_origin_domain" {
-  description = "domain name of the ssp"
-  type        = string
-}
-
-variable "service_names" {
-  description = "List of service names to use as subdomains"
-  default     = ["startup-sample-project", "ssp"]
-  type        = list(string)
-}
-
 variable "common_tags" {
   description = "Common tags for created resources"
   default = {
     Application = "Kong Data Plane"
   }
+}
+
+variable "ecs_task_execution_role_name" {
+  description = "ECS task execution role name"
+  default     = "DefaultECSTaskExecutionRole"
 }
 
 variable "app_count" {

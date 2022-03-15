@@ -102,6 +102,37 @@ resource "aws_ecs_task_definition" "kong-task" {
       }
       mountPoints = []
       volumesFrom = []
+    },
+    {
+      dnsSearchDomains = null
+      logConfiguration = {
+        logDriver = "awslogs"
+        secretOptions = null
+        options  =  {
+          awslogs-group = "/ecs/${var.app_name}"
+          awslogs-region = var.aws_region
+          awslogs-stream-prefix = "ecs"
+        }
+      }
+      cpu = 0
+      environment = [
+        {
+          name = "SECRET_ARN"
+          value = "arn:aws:secretsmanager:us-west-2:123456789012:secret:catsndogs/unicorn-8VPgCY"
+        }
+      ]
+      mountPoints = [
+        {
+          readOnly = null
+          containerPath = "/tmp"
+          sourceVolume = "secret-vol"
+        }
+      ]
+      memory = 128
+      volumesFrom = []
+      image = "public.ecr.aws/aws-containers/aws-secrets-manager-secret-sidecar:v0.1.4"
+      essential = false
+      name =  "secret-injector-sidecar"
     }
   ])
 }
