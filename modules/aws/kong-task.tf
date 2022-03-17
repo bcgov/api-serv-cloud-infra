@@ -98,7 +98,7 @@ resource "aws_ecs_task_definition" "kong-task" {
         },
         {
           name = "cluster_ca_cert",
-          value = "/tmp/ca.crt"
+          value = "cluster_ca_cert: /tmp/ca.crt"
         }
       ]
       logConfiguration = {
@@ -112,6 +112,7 @@ resource "aws_ecs_task_definition" "kong-task" {
       }
       mountPoints = [
         {
+          readOnly = null
           containerPath = "/tmp"
           sourceVolume = "secret-vol"
         }
@@ -142,6 +143,7 @@ resource "aws_ecs_task_definition" "kong-task" {
       ]
       mountPoints = [
         {
+          readOnly = null
           containerPath = "/tmp"
           sourceVolume = "secret-vol"
         }
@@ -153,7 +155,7 @@ resource "aws_ecs_task_definition" "kong-task" {
       name =  "secret-injector-sidecar"
     }
   ])
-  ephemeral_storage {
-      size_in_gib = 1
-    }
+  volume {
+    name = "secret-vol"
+  }
 }
