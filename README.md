@@ -1,24 +1,39 @@
 
-# <application_license_badge>
+# APS AWS Infra
 <!--- [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](./LICENSE) --->
 
-# BC Gov Terraform Template
-
-This repo provides a starting point for users who want to create valid Terraform modules stored in GitHub.  
-
-## Third-Party Products/Libraries used and the licenses they are covered by
-<!--- product/library and path to the LICENSE --->
-<!--- Example: <library_name> - [![GitHub](<shield_icon_link>)](<path_to_library_LICENSE>) --->
+APS AWS IAC (infrastructure as code) managed by terraform for deploying api management solution
 
 ## Project Status
 - [x] Development
 - [ ] Production/Maintenance
 
-## Documentation
-<!--- Point to another readme or create a GitHub Pages (https://guides.github.com/features/pages/) --->
-
 ## Getting Started
-<!--- setup env vars, secrets, instructions... --->
+
+The following components are to be deployed
+
+- Kong v2.x
+
+## Prerequisites
+
+### Tools Required
+
+- Terraform
+- Terragrunt
+- Prometheus
+
+### Environment Setup
+
+#### Configure below parameters as repository secrets
+
+|ENV VAR|Reference|
+|-|-|
+|`AWS_ACCESS_KEY_ID`|Parameter Store - (`/octk/service-accounts/ci`).`access_key_id`|
+|`AWS_ACCOUNTS_ECR_READ_ACCESS`|["arn:aws:iam::DEV_ACCOUNT_NUMBER:root", "arn:aws:iam::TEST_ACCOUNT_NUMBER:root", "arn:aws:iam::PROD_ACCOUNT_NUMBER:root"]|
+|`AWS_ECR_URI`|Amazon ECR (copy URI)|""|
+|`AWS_ROLE_TO_ASSUME`|Parameter Store - (`/octk/service-accounts/ci`).`ecr_read_write`|
+`AWS_SECRET_ACCESS_KEY`|Parameter Store - (`/octk/service-accounts/ci`).`access_key_secret`|
+|`TFC_TEAM_TOKEN`|Parameter Store - (`/octk/tfc/team-token`)|
 
 ## Getting Help or Reporting an Issue
 <!--- Example below, modify accordingly --->

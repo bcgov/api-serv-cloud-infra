@@ -1,9 +1,9 @@
 resource "aws_ecs_service" "kong" {
-  count                             = local.create_ecs_service
-  name                              = var.app_name
+  count                             = 1
+  name                              = "kong"
   cluster                           = aws_ecs_cluster.main.id
   task_definition                   = aws_ecs_task_definition.kong-task[count.index].arn
-  desired_count                     = var.app_count
+  desired_count                     = 2
   enable_ecs_managed_tags           = true
   propagate_tags                    = "TASK_DEFINITION"
   health_check_grace_period_seconds = 60
@@ -23,12 +23,12 @@ resource "aws_ecs_service" "kong" {
   }
 
   load_balancer {
-    target_group_arn = aws_alb_target_group.tg-kong.id
-    container_name   = var.container_name
-    container_port   = var.app_port
+    target_group_arn = aws_alb_target_group.tg_kong.id
+    container_name   = "kong"
+    container_port   = var.kong_port_http
   }
 
-  depends_on = [data.aws_alb_listener.alb-listener-kong, aws_iam_role_policy_attachment.ecs_task_execution_role]
+  depends_on = [data.aws_alb_listener.alb_kong_http, aws_iam_role_policy_attachment.ecs_task_execution_policy_attachment]
 
   tags = local.common_tags
 }
