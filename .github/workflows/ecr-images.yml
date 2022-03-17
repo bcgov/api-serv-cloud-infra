@@ -86,7 +86,7 @@ jobs:
     env:
       DOCKER_ITEM: secrets-injector
       PREFIX: ""
-    name: kong image
+    name: secrets-injector image
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repo
