@@ -1,6 +1,6 @@
 resource "aws_ecs_task_definition" "kong-task" {
-  count                    = local.create_ecs_service
-  family                   = var.app_name
+  count                    = 1
+  family                   = "kong"
   execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
   task_role_arn            = aws_iam_role.kong_container_role.arn
   network_mode             = "awsvpc"
@@ -11,12 +11,18 @@ resource "aws_ecs_task_definition" "kong-task" {
   container_definitions = jsonencode([
     {
       essential   = true
-      container_name = var.app_name
-      name        = var.app_name
-      image       = var.app_image
+      container_name = "kong"
+      name        = "kong"
+      image       = "${var.ecr_repository}/kong:${local.dev_versions.kong}"
       cpu         = var.fargate_cpu
       memory      = var.fargate_memory
       networkMode = "awsvpc"
+      dependsOn = [
+        {
+          containerName = "secret-injector-sidecar"
+          condition = "COMPLETE"
+        }
+      ]
       portMappings = [
         {
           protocol      = "tcp"
@@ -89,18 +95,28 @@ resource "aws_ecs_task_definition" "kong-task" {
         {
           name  = "untrusted_lua_sandbox_environment",
           value = "table.concat"
+        },
+        {
+          name = "cluster_ca_cert",
+          value = "/tmp/ca.crt"
         }
       ]
       logConfiguration = {
         logDriver = "awslogs"
         options = {
           awslogs-create-group  = "true"
-          awslogs-group         = "/ecs/${var.app_name}"
+          awslogs-group         = "/ecs/kong"
           awslogs-region        = var.aws_region
           awslogs-stream-prefix = "ecs"
         }
       }
-      mountPoints = []
+      mountPoints = [
+        {
+          readOnly = null
+          containerPath = "/tmp"
+          sourceVolume = "secret-vol"
+        }
+      ]
       volumesFrom = []
     },
     {
@@ -109,7 +125,7 @@ resource "aws_ecs_task_definition" "kong-task" {
         logDriver = "awslogs"
         secretOptions = null
         options  =  {
-          awslogs-group = "/ecs/${var.app_name}"
+          awslogs-group = "/ecs/kong"
           awslogs-region = var.aws_region
           awslogs-stream-prefix = "ecs"
         }
@@ -118,7 +134,11 @@ resource "aws_ecs_task_definition" "kong-task" {
       environment = [
         {
           name = "SECRET_ARN"
-          value = "arn:aws:secretsmanager:us-west-2:123456789012:secret:catsndogs/unicorn-8VPgCY"
+          value = "arn:aws:secretsmanager:ca-central-1:648498837764:secret:kongh-cluster-ca-crt-hiYRLu"
+        },
+        {
+          name = "SECRET_FILENAME"
+          value = "ca.crt"
         }
       ]
       mountPoints = [
@@ -130,9 +150,19 @@ resource "aws_ecs_task_definition" "kong-task" {
       ]
       memory = 128
       volumesFrom = []
-      image = "public.ecr.aws/aws-containers/aws-secrets-manager-secret-sidecar:v0.1.4"
+      image = "${var.ecr_repository}/kong:${local.dev_versions.secrets-injector}"
       essential = false
       name =  "secret-injector-sidecar"
     }
   ])
+  volume {
+      name = "secret-vol"
+      docker_volume_configuration {
+        autoprovision = null
+        labels = null
+        scope = "task"
+        driver = "local"
+        driver_opts = null
+      }
+    }
 }
