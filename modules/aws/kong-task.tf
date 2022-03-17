@@ -112,7 +112,6 @@ resource "aws_ecs_task_definition" "kong-task" {
       }
       mountPoints = [
         {
-          readOnly = null
           containerPath = "/tmp"
           sourceVolume = "secret-vol"
         }
@@ -143,7 +142,6 @@ resource "aws_ecs_task_definition" "kong-task" {
       ]
       mountPoints = [
         {
-          readOnly = null
           containerPath = "/tmp"
           sourceVolume = "secret-vol"
         }
@@ -155,14 +153,7 @@ resource "aws_ecs_task_definition" "kong-task" {
       name =  "secret-injector-sidecar"
     }
   ])
-  volume {
-      name = "secret-vol"
-      docker_volume_configuration {
-        autoprovision = null
-        labels = null
-        scope = "task"
-        driver = "local"
-        driver_opts = null
-      }
+  ephemeral_storage {
+      size_in_gib = 1
     }
 }
