@@ -54,3 +54,28 @@ EOF
 
   tags = local.common_tags
 }
+
+resource "aws_iam_role_policy" "kong_container_cwlogs" {
+  name = "kong_container_cwlogs"
+  role = aws_iam_role.kong_container_role.id
+
+  policy = <<-EOF
+  {
+      "Version": "2012-10-17",
+      "Statement": [
+          {
+              "Effect": "Allow",
+              "Action": [
+                  "logs:CreateLogGroup",
+                  "logs:CreateLogStream",
+                  "logs:PutLogEvents",
+                  "logs:DescribeLogStreams"
+              ],
+              "Resource": [
+                  "arn:aws:logs:*:*:*"
+              ]
+          }
+      ]
+  }
+EOF
+}

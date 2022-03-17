@@ -2,7 +2,7 @@
 
 # ALB Security Group: Edit to restrict access to the application
 data "aws_security_group" "sg_kong" {
-  name = "sg-kong"
+  name = "Web_sg"
 }
 
 # Traffic to the ECS cluster should only come from the ALB

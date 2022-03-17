@@ -9,7 +9,7 @@ data "aws_alb" "main" {
 # Redirect all traffic from the ALB to the target group
 data "aws_alb_listener" "alb_kong_http" {
   load_balancer_arn = data.aws_alb.main.id
-  port              = 80
+  port              = 443
 }
 
 resource "aws_alb_target_group" "tg_kong" {
