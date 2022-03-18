@@ -17,12 +17,6 @@ resource "aws_ecs_task_definition" "kong-task" {
       cpu         = var.fargate_cpu
       memory      = var.fargate_memory
       networkMode = "awsvpc"
-      dependsOn = [
-        {
-          containerName = "secret-injector-sidecar"
-          condition = "COMPLETE"
-        }
-      ]
       portMappings = [
         {
           protocol      = "tcp"
