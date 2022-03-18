@@ -1,0 +1,55 @@
+name: Terraform Plan
+
+on:
+  push:
+    branches: [dev]
+
+env:
+  ECR_URI: ${{ secrets.AWS_ECR_URI }}
+
+  TF_VERSION: 1.0.5
+  TG_VERSION: 0.28.7
+  TG_SRC_PATH: terraform
+  TFC_SB_WORKSPACE: sandbox
+  TFC_DEV_WORKSPACE: dev
+
+jobs:
+  plan:
+    name: terraform-plan
+    runs-on: ubuntu-20.04
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v2
+
+      - uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+          cli_config_credentials_token: ${{ secrets.TFC_TEAM_TOKEN }}
+
+      - uses: peter-murray/terragrunt-github-action@v1.0.0
+        with:
+          terragrunt_version: ${{ env.TG_VERSION }}
+
+      - name: Terragrunt Plan - Sandbox
+        id: tg_plan_sandbox
+        working-directory: ${{ env.TG_SRC_PATH }}/${{ env.TFC_SB_WORKSPACE }}
+        env:
+          TF_CLI_ARGS: -no-color
+          AWS_ACCOUNTS_ECR_READ_ACCESS: ${{ secrets.AWS_ACCOUNTS_ECR_READ_ACCESS }}
+        run: terragrunt run-all plan --terragrunt-non-interactive | tee /tmp/tg_plan
+        continue-on-error: true
+
+      - name: Terragrunt Plan - Dev
+        id: tg_plan_dev
+        working-directory: ${{ env.TG_SRC_PATH }}/${{ env.TFC_DEV_WORKSPACE }}
+        env:
+          TF_CLI_ARGS: -no-color
+          aws_ecr_uri: ${{ env.ECR_URI }}
+        run: terragrunt run-all plan --terragrunt-non-interactive | tee /tmp/tg_plan
+        continue-on-error: true
+
+      - name: Terragrunt Plan Status
+        if: steps.plan.outcome == 'failure'
+        run: exit 1

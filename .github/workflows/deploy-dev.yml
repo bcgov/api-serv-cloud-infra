@@ -1,8 +1,11 @@
 name: Deploy Dev
 
 on:
-  push:
-    branches: [dev]
+  workflow_run:
+    workflows:
+      - Terraform Plan
+    types:
+      - completed
 
 env:
   ECR_URI: ${{ secrets.AWS_ECR_URI }}
@@ -16,10 +19,13 @@ jobs:
   cd:
     name: cd
     runs-on: ubuntu-20.04
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
 
     steps:
       - name: Check out the repo
         uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
 
       - uses: hashicorp/setup-terraform@v1
         with:
