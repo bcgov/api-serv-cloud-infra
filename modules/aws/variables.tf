@@ -84,3 +84,13 @@ variable "budget_tag" {
   description = "The Cost Allocation Tag that will be used to build the monthly budget. "
   default     = "Project=Startup Sample"
 }
+
+variable "cloudfront" {
+  description = "enable or disable the cloudfront distrabution creation"
+  type        = bool
+}
+
+variable "cloudfront_origin_domain" {
+  description = "domain name of the ssp"
+  type        = string
+}
