@@ -28,7 +28,7 @@ resource "aws_ecs_service" "kong" {
     container_port   = var.kong_port_http
   }
 
-  depends_on = [data.aws_alb_listener.alb_kong_http, aws_iam_role_policy_attachment.ecs_task_execution_policy_attachment]
+  depends_on = [data.aws_alb_listener.alb_kong_http, aws_iam_role_policy_attachment.ecs_task_role_policy_attachment]
 
   tags = local.common_tags
 }

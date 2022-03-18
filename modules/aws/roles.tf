@@ -21,16 +21,36 @@ resource "aws_iam_role" "ecs_task_execution_role" {
   tags = local.common_tags
 }
 
-# ECS task execution role policy attachment
-resource "aws_iam_role_policy_attachment" "ecs_task_execution_policy_attachment" {
+# Attaching task execution and read from secrets manager policies to task execution role
+resource "aws_iam_role_policy_attachment" "ecs_task_role_policy_attachment" {
   role       = aws_iam_role.ecs_task_execution_role.name
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+  for_each = toset([
+    "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy",
+    aws_iam_policy.secrets_manager_read_policy.arn
+  ])
+  policy_arn = each.value
 }
 
-# ECS read from secrets manager policy attachment
-resource "aws_iam_role_policy_attachment" "ecs_task_read_secrets_policy_attachment" {
-  role       = aws_iam_role.ecs_task_execution_role.name
-  policy_arn = aws_iam_policy.secrets_manager_read_policy.arn
+resource "aws_iam_role_policy" "ecs_task_execution_cwlogs" {
+  name = "ecs_task_execution_cwlogs"
+  role = aws_iam_role.ecs_task_execution_role.id
+
+  policy = <<-EOF
+  {
+      "Version": "2012-10-17",
+      "Statement": [
+          {
+              "Effect": "Allow",
+              "Action": [
+                  "logs:CreateLogGroup"
+              ],
+              "Resource": [
+                  "arn:aws:logs:*:*:*"
+              ]
+          }
+      ]
+  }
+EOF
 }
 
 resource "aws_iam_role" "kong_container_role" {
