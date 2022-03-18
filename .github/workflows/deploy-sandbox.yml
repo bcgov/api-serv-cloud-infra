@@ -2,8 +2,7 @@ name: Deploy Sandbox
 
 on:
   workflow_run:
-    workflows:
-      - Terraform Plan
+    workflows: ["Terraform Plan"]
     types:
       - completed
 
