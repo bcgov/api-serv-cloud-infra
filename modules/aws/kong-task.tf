@@ -14,8 +14,8 @@ resource "aws_ecs_task_definition" "kong-task" {
       container_name = "kong"
       name        = "kong"
       image       = "${var.ecr_repository}/kong:${local.dev_versions.kong}"
-      cpu         = var.fargate_cpu
-      memory      = var.fargate_memory
+      cpu         = 256
+      memory      = 512
       networkMode = "awsvpc"
       dependsOn = [
         {
@@ -125,12 +125,13 @@ resource "aws_ecs_task_definition" "kong-task" {
         logDriver = "awslogs"
         secretOptions = null
         options  =  {
-          awslogs-group = "/ecs/kong"
+          awslogs-create-group  = "true"
+          awslogs-group = "/ecs/secrets-injector"
           awslogs-region = var.aws_region
           awslogs-stream-prefix = "ecs"
         }
       }
-      cpu = 0
+      cpu = 256
       environment = [
         {
           name = "SECRET_ARN"
@@ -148,7 +149,7 @@ resource "aws_ecs_task_definition" "kong-task" {
           sourceVolume = "secret-vol"
         }
       ]
-      memory = 128
+      memory = 512
       volumesFrom = []
       image = "${var.ecr_repository}/kong:${local.dev_versions.secrets-injector}"
       essential = false

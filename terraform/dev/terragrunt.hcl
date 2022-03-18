@@ -12,6 +12,8 @@ generate "dev_tfvars" {
   disable_signature = true
   contents          = <<-EOF
     alb_name = "default"
+    cloudfront = true
+    cloudfront_origin_domain = "kong-dp.sjso4j-dev.nimbus.cloud.gov.bc.ca"
     service_names = ["kong"]
   EOF
 }
