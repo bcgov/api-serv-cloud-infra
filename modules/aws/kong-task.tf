@@ -14,8 +14,8 @@ resource "aws_ecs_task_definition" "kong-task" {
       container_name = "kong"
       name        = "kong"
       image       = "${var.ecr_repository}/kong:${local.dev_versions.kong}"
-      cpu         = 256
-      memory      = 512
+      cpu         = var.fargate_cpu
+      memory      = var.fargate_memory
       networkMode = "awsvpc"
       dependsOn = [
         {
@@ -95,10 +95,6 @@ resource "aws_ecs_task_definition" "kong-task" {
         {
           name  = "untrusted_lua_sandbox_environment",
           value = "table.concat"
-        },
-        {
-          name = "cluster_ca_cert",
-          value = "cluster_ca_cert: /tmp/ca.crt"
         }
       ]
       logConfiguration = {
@@ -110,53 +106,8 @@ resource "aws_ecs_task_definition" "kong-task" {
           awslogs-stream-prefix = "ecs"
         }
       }
-      mountPoints = [
-        {
-          readOnly = null
-          containerPath = "/tmp"
-          sourceVolume = "secret-vol"
-        }
-      ]
+      mountPoints = []
       volumesFrom = []
-    },
-    {
-      dnsSearchDomains = null
-      logConfiguration = {
-        logDriver = "awslogs"
-        secretOptions = null
-        options  =  {
-          awslogs-create-group  = "true"
-          awslogs-group = "/ecs/secrets-injector"
-          awslogs-region = var.aws_region
-          awslogs-stream-prefix = "ecs"
-        }
-      }
-      cpu = 256
-      environment = [
-        {
-          name = "SECRET_ARN"
-          value = "arn:aws:secretsmanager:ca-central-1:648498837764:secret:kongh-cluster-ca-crt-hiYRLu"
-        },
-        {
-          name = "SECRET_FILENAME"
-          value = "ca.crt"
-        }
-      ]
-      mountPoints = [
-        {
-          readOnly = null
-          containerPath = "/tmp"
-          sourceVolume = "secret-vol"
-        }
-      ]
-      memory = 512
-      volumesFrom = []
-      image = "${var.ecr_repository}/kong:${local.dev_versions.secrets-injector}"
-      essential = false
-      name =  "secret-injector-sidecar"
     }
   ])
-  volume {
-    name = "secret-vol"
-  }
 }
