@@ -14,7 +14,7 @@ data "aws_alb_listener" "alb_kong_http" {
 
 resource "aws_alb_target_group" "tg_kong" {
   name                 = "tg-kong"
-  port                 = var.kong_port_http
+  port                 = var.kong_port_admin
   protocol             = "HTTP"
   vpc_id               = module.network.aws_vpc.id
   target_type          = "ip"

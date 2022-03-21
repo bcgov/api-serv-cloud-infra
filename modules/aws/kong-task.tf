@@ -13,22 +13,22 @@ resource "aws_ecs_task_definition" "kong-task" {
       essential   = true
       container_name = "kong"
       name        = "kong"
-      image       = "${var.ecr_repository}/kong:${local.dev_versions.kong}"
+      image       = "365055765775.dkr.ecr.ca-central-1.amazonaws.com/aps-infra/kong:${local.dev_versions.kong}"
       cpu         = var.fargate_cpu
       memory      = var.fargate_memory
       networkMode = "awsvpc"
       portMappings = [
         {
           protocol      = "tcp"
-          containerPort = 8000
+          containerPort = var.kong_port_http
         },
         {
           protocol      = "tcp"
-          containerPort = 8443
+          containerPort = var.kong_port_https
         },
         {
           protocol      = "tcp"
-          containerPort = 8001
+          containerPort = var.kong_port_admin
         },
         {
           protocol      = "tcp"
@@ -43,10 +43,6 @@ resource "aws_ecs_task_definition" "kong-task" {
         {
           name  = "KONG_DATABASE",
           value = "off"
-        },
-        {
-          name  = "KONG_DECLARATIVE_CONFIG",
-          value = "/kong/declarative/kong.yml"
         },
         {
           name  = "KONG_PLUGINS",
@@ -70,7 +66,7 @@ resource "aws_ecs_task_definition" "kong-task" {
         },
         {
           name  = "KONG_ADMIN_LISTEN",
-          value = "0.0.0.0:8001, 0.0.0.0:8444 ssl"
+          value = "0.0.0.0:${var.kong_port_admin}"
         }
       ]
       logConfiguration = {

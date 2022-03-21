@@ -35,7 +35,7 @@ variable "az_count" {
 }
 
 variable "health_check_path" {
-  default = "/"
+  default = "/services"
 }
 
 variable "fargate_cpu" {
@@ -50,12 +50,17 @@ variable "fargate_memory" {
 
 variable "kong_port_http" {
   description = "Port exposed by the docker image to redirect traffic to"
-  default     = 80
+  default     = 8000
 }
 
 variable "kong_port_https" {
   description = "Port exposed by the docker image to redirect traffic to"
-  default     = 443
+  default     = 8443
+}
+
+variable "kong_port_admin" {
+  description = "Port exposed by the docker image to redirect traffic to"
+  default     = 8001
 }
 
 variable "service_names" {
