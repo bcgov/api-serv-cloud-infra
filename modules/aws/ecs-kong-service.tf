@@ -3,7 +3,7 @@ resource "aws_ecs_service" "kong" {
   name                              = "kong"
   cluster                           = aws_ecs_cluster.main.id
   task_definition                   = aws_ecs_task_definition.kong-task[count.index].arn
-  desired_count                     = 2
+  desired_count                     = 1
   enable_ecs_managed_tags           = true
   propagate_tags                    = "TASK_DEFINITION"
   health_check_grace_period_seconds = 60

@@ -20,14 +20,20 @@ resource "aws_ecs_task_definition" "kong-task" {
       portMappings = [
         {
           protocol      = "tcp"
-          containerPort = var.kong_port_http
-          hostPort      = var.kong_port_http
+          containerPort = 8000
         },
         {
           protocol      = "tcp"
-          containerPort = var.kong_port_https
-          hostPort      = var.kong_port_https
-        }
+          containerPort = 8443
+        },
+        {
+          protocol      = "tcp"
+          containerPort = 8001
+        },
+        {
+          protocol      = "tcp"
+          containerPort = 8444
+        },
       ]
       environment = [
         {
@@ -35,60 +41,36 @@ resource "aws_ecs_task_definition" "kong-task" {
           value = var.aws_region
         },
         {
-          name  = "role",
-          value = "data_plane"
-        },
-        {
-          name  = "database",
+          name  = "KONG_DATABASE",
           value = "off"
         },
         {
-          name  = "cluster_mtls",
-          value = "pki"
+          name  = "KONG_DECLARATIVE_CONFIG",
+          value = "/kong/declarative/kong.yml"
         },
         {
-          name  = "plugins",
+          name  = "KONG_PLUGINS",
           value = "bundled, oidc, gwa-ip-anonymity, kong-spec-expose, bcgov-gwa-endpoint, referer, jwt-keycloak, kong-upstream-jwt"
         },
         {
-          name  = "proxy_access_log",
-          value = "off"
+          name  = "KONG_PROXY_ACCESS_LOG",
+          value = "/dev/stdout"
         },
         {
-          name  = "headers",
-          value = "latency_tokens"
-        },
-        {	
-          name  = "nginx_worker_processes",
-          value = "1"
+          name  = "KONG_ADMIN_ACCESS_LOG",
+          value = "/dev/stdout"
         },
         {
-          name  = "nginx_events_worker_connections",
-          value = "100000"
+          name  = "KONG_PROXY_ERROR_LOG",
+          value = "/dev/stderr"
         },
         {
-          name  = "nginx_worker_rlimit_nofile",
-          value = "200000"
+          name  = "KONG_ADMIN_ERROR_LOG",
+          value = "/dev/stderr"
         },
         {
-          name  = "nginx_proxy_proxy_max_temp_file_size",
-          value = "8192m"
-        },
-        {
-          name  = "real_ip_header",
-          value = "X-Forwarded-For"
-        },
-        {
-          name  = "trusted_ips",
-          value = "10.97.0.0/16,10.95.0.0/16"
-        },
-        {
-          name  = "untrusted_lua_sandbox_requires",
-          value = "cjson.safe"
-        },
-        {
-          name  = "untrusted_lua_sandbox_environment",
-          value = "table.concat"
+          name  = "KONG_ADMIN_LISTEN",
+          value = "0.0.0.0:8001, 0.0.0.0:8444 ssl"
         }
       ]
       logConfiguration = {
