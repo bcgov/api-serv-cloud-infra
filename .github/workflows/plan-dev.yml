@@ -17,7 +17,7 @@ env:
 
 jobs:
   plan:
-    name: terraform-plan
+    name: terragrunt-plan-dev
     runs-on: ubuntu-20.04
 
     steps:

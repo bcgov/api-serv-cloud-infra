@@ -15,7 +15,7 @@ env:
 
 jobs:
   plan:
-    name: terraform-plan
+    name: terragrunt-plan-sandbox
     runs-on: ubuntu-20.04
 
     steps:
