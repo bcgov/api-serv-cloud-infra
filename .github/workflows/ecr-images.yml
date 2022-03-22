@@ -36,6 +36,7 @@ jobs:
         name: Get short SHA
         run: echo "::set-output name=sha8::$(echo ${GITHUB_SHA} | cut -c1-8)"
 
+
       - if: steps.changes.outputs.BUILD == 'YES'
         name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1

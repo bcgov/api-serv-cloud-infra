@@ -13,7 +13,7 @@ resource "aws_ecs_task_definition" "kong-task" {
       essential   = true
       container_name = "kong"
       name        = "kong"
-      image       = "365055765775.dkr.ecr.ca-central-1.amazonaws.com/aps-infra/kong:${local.dev_versions.kong}"
+      image       = "${var.ecr_repository}/kong:${local.dev_versions.kong}"
       cpu         = var.fargate_cpu
       memory      = var.fargate_memory
       networkMode = "awsvpc"
