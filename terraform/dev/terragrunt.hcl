@@ -13,7 +13,7 @@ generate "dev_tfvars" {
   contents          = <<-EOF
     alb_name = "default"
     cloudfront = true
-    cloudfront_origin_domain = "kong-dp.sjso4j-dev.nimbus.cloud.gov.bc.ca"
+    cloudfront_origin_domain = "kong.sjso4j-dev.nimbus.cloud.gov.bc.ca"
     service_names = ["kong"]
   EOF
 }

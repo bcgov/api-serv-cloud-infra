@@ -16,7 +16,7 @@ generate "tfvars" {
   if_exists         = "overwrite"
   disable_signature = true
   contents          = <<-EOF
-repository_names = ["ssp"]
+repository_names = ["aps-infra/kong", "aps-infra/secrets-injector"]
 read_principals = ${local.read_principals}
 EOF
 }

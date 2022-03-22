@@ -3,7 +3,7 @@ name: Deploy Sandbox
 on:
   workflow_run:
     workflows:
-      - Terraform Plan
+      - Terragrunt Plan Sandbox
     types:
       - completed
 
@@ -15,7 +15,7 @@ env:
 
 jobs:
   deploy-sandbox:
-    name: deploy-sandbox
+    name: terragrunt-deploy-sandbox
     runs-on: ubuntu-20.04
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
 
