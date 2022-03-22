@@ -35,6 +35,20 @@ The following components are to be deployed
 `AWS_SECRET_ACCESS_KEY`|Parameter Store - (`/octk/service-accounts/ci`).`access_key_secret`|
 |`TFC_TEAM_TOKEN`|Parameter Store - (`/octk/tfc/team-token`)|
 
+## Installation
+
+### Locally
+
+- Create `.terraformrc` and configure tfc team token
+  ```yaml
+  credentials "app.terraform.io" {
+   token = "<TFC_TEAM_TOKEN>"
+  }
+  ```
+- Save path of `.terraformrc` in an env var - `export TF_CLI_CONFIG_FILE=<PATH_TO_TERRAFORMRC>`
+- Run `terragrunt run-all validate` to validate the terraform code
+- Run `terragrunt run-all plan` to create a plan for all the environments. Append `--terragrunt-working-dir ./terraform/dev/` to scope plan for dev
+
 ## Getting Help or Reporting an Issue
 <!--- Example below, modify accordingly --->
 To report bugs/issues/feature requests, please file an [issue](../../issues).
