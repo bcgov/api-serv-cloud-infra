@@ -113,7 +113,7 @@ resource "aws_ecs_task_definition" "kong-task" {
       }]
       volumesFrom = []
       dependsOn   = [{
-        container_name = "secrets-injector",
+        ContainerName = "secrets-injector",
         condition      = "COMPLETE"
       }]
     },
