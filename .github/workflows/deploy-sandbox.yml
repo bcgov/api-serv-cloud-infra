@@ -1,29 +1,39 @@
 name: Deploy Sandbox
 
 on:
-  workflow_run:
-    workflows:
-      - Terragrunt Plan Sandbox
-    types:
-      - completed
+  push:
+    branches: [dev]
+    paths: [terraform/sandbox/**]
 
 env:
+  ECR_URI: ${{ secrets.AWS_ECR_URI }}
+
   TF_VERSION: 1.0.5
-  TG_VERSION: 0.31.4
+  TG_VERSION: 0.28.7
   TG_SRC_PATH: terraform
   TFC_WORKSPACE: sandbox
 
 jobs:
-  deploy-sandbox:
-    name: terragrunt-deploy-sandbox
+  terragrunt:
+    name: deploy-sandbox
     runs-on: ubuntu-20.04
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
 
     steps:
       - name: Check out the repo
         uses: actions/checkout@v2
-        with:
-          ref: ${{ github.event.workflow_run.head_branch }}
+
+      - id: files
+        uses: jitterbit/get-changed-files@v1
+
+      - id: changes
+        name: Any changes?
+        run:
+          "echo '::set-output name=BUILD::${{env.BUILD_ALL}}'\nfor changed_file in\
+          \ ${{ steps.files.outputs.all }}; do\n  echo \"Changed file - do I care? ${changed_file}.\"\
+          \n  if  [[ ${changed_file} == dockerfiles/${{env.DOCKER_ITEM}}/* ]] || [[\
+          \ ${changed_file} == dockerfiles/Dockerfile.${{env.DOCKER_ITEM}} ]] ;\n  then\n\
+          \    echo \"Detected change!\"\n    echo '::set-output name=BUILD::YES'\n\
+          \  fi\ndone\n"
 
       - uses: hashicorp/setup-terraform@v1
         with:
@@ -34,8 +44,20 @@ jobs:
         with:
           terragrunt_version: ${{ env.TG_VERSION }}
 
-      - name: Terragrunt Apply
+      - name: Terragrunt Plan
+        id: tg_plan_sandbox
         working-directory: ${{ env.TG_SRC_PATH }}/${{ env.TFC_WORKSPACE }}
         env:
+          TF_CLI_ARGS: -no-color
+          AWS_ECR_URI: ${{ env.ECR_URI }}
           AWS_ACCOUNTS_ECR_READ_ACCESS: ${{ secrets.AWS_ACCOUNTS_ECR_READ_ACCESS }}
+        run: terragrunt run-all plan --terragrunt-non-interactive | tee /tmp/tg_plan
+
+      - name: Terragrunt Apply
+        id: tg_apply_sandbox
+        working-directory: ${{ env.TG_SRC_PATH }}/${{ env.TFC_WORKSPACE }}
+        env:
+          TF_CLI_ARGS: -no-color
+          AWS_ACCOUNTS_ECR_READ_ACCESS: ${{ secrets.AWS_ACCOUNTS_ECR_READ_ACCESS }}
+          AWS_ECR_URI: ${{ env.ECR_URI }}
         run: terragrunt run-all apply --terragrunt-non-interactive

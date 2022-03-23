@@ -3,7 +3,7 @@ locals {
   tfc_organization = "bcgov"
   project          = "sjso4j"
   environment      = reverse(split("/", get_terragrunt_dir()))[0]
-  aws_ecr_uri      = get_env("aws_ecr_uri", "")
+  aws_ecr_uri      = get_env("AWS_ECR_URI", "")
 }
 
 generate "remote_state" {
