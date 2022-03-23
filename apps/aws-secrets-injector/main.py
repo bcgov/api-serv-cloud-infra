@@ -25,11 +25,8 @@ def main():
 
     try:
         list_of_secrets_json = os.getenv('AWS_SECRETS', """{}""")
-        logger.debug("list_of_secrets_json - %s" % list_of_secrets_json)
         path = os.getenv("FILE_PATH", "/tmp")
-        logger.debug("path - %s" % path)
         secrets_dict = json.loads(list_of_secrets_json)
-        logger.debug("secrets_dict - %s" % str(secrets_dict))
         sm_svc = SecretsManagerService()
 
         if not secrets_dict == None and not bool(secrets_dict) == False:

@@ -41,6 +41,34 @@ resource "aws_ecs_task_definition" "kong-task" {
           value = var.aws_region
         },
         {
+          name  = "KONG_ROLE",
+          value = "data_plane"
+        },
+        {
+          name  = "KONG_PROXY_LISTEN",
+          value = "0.0.0.0:${var.kong_port_http}"
+        },
+        {
+          name  = "KONG_CLUSTER_CONTROL_PLANE",
+          value = "gwcluster-api-gov-bc-ca.dev.api.gov.bc.ca:443"
+        },
+        {
+          name  = "KONG_CLUSTER_MTLS",
+          value = "pki"
+        },
+        {
+          name  = "KONG_CLUSTER_CERT",
+          value = "/etc/secrets/kongh/tls.crt"
+        },
+        {
+          name  = "KONG_CLUSTER_CERT_KEY",
+          value = "/etc/secrets/kongh/tls.key"
+        },
+        {
+          name  = "KONG_CLUSTER_CA_CERT",
+          value = "/etc/secrets/kongh/ca.crt"
+        },
+        {
           name  = "KONG_DATABASE",
           value = "off"
         },
@@ -79,10 +107,15 @@ resource "aws_ecs_task_definition" "kong-task" {
         }
       }
       mountPoints = [{
-        sourceVolume = "secret-vol",
+        readOnly      = null,
+        sourceVolume  = "secret-vol",
         containerPath = "/etc/secrets/kongh"
       }]
       volumesFrom = []
+      dependsOn   = [{
+        container_name = "secrets-injector",
+        condition      = "COMPLETE"
+      }]
     },
     {
       essential   = false
@@ -93,6 +126,10 @@ resource "aws_ecs_task_definition" "kong-task" {
       memory      = 512
       networkMode = "awsvpc"
       environment = [
+        {
+          name  = "LOG_LEVEL",
+          value = "INFO"
+        },
         {
           name  = "AWS_REGION",
           value = var.aws_region
@@ -116,7 +153,8 @@ resource "aws_ecs_task_definition" "kong-task" {
         }
       }
       mountPoints = [{
-        sourceVolume = "secret-vol",
+        readOnly      = null,
+        sourceVolume  = "secret-vol",
         containerPath = "/etc/secrets/kongh"
       }]
       volumesFrom = []
