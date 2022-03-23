@@ -94,6 +94,10 @@ resource "aws_ecs_task_definition" "kong-task" {
       networkMode = "awsvpc"
       environment = [
         {
+          name  = "AWS_REGION",
+          value = var.aws_region
+        },
+        {
           name  = "AWS_SECRETS",
           value = "{\"kongh-cluster-ca-crt\": \"ca.crt\", \"kongh-cluster-tls-crt\": \"tls.crt\"}"
         },

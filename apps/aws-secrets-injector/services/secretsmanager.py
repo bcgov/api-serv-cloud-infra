@@ -19,9 +19,9 @@ class SecretsManagerService:
 
     def get_secret(self, secret_id):
         try:
-            get_secret_value_response = self.client.get_secret_value(
-            SecretId=secret_id
-        )
+            logger.debug("fetching - %s" % secret_id)
+            get_secret_value_response = self.client.get_secret_value(SecretId=secret_id)
+            logger.debug("get_secret_value_response - %s" % str(get_secret_value_response["CreatedDate"]))
         except ClientError as e:
             if e.response['Error']['Code'] == 'ResourceNotFoundException':
                 print("The requested secret " + secret_id + " was not found")

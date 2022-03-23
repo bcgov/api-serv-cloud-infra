@@ -4,6 +4,10 @@ import logging
 import json
 import traceback
 
+# using root logger
+logging.basicConfig(level=os.getenv('LOG_LEVEL', default=logging.DEBUG),
+                    format='%(asctime)s-%(levelname)s-%(message)s', datefmt='%d-%b-%y %H:%M:%S')
+
 logger = logging.getLogger(__name__)
 
 def write_to_file(content, file_dir, file_name):
@@ -21,8 +25,11 @@ def main():
 
     try:
         list_of_secrets_json = os.getenv('AWS_SECRETS', """{}""")
+        logger.debug("list_of_secrets_json - %s" % list_of_secrets_json)
         path = os.getenv("FILE_PATH", "/tmp")
+        logger.debug("path - %s" % path)
         secrets_dict = json.loads(list_of_secrets_json)
+        logger.debug("secrets_dict - %s" % str(secrets_dict))
         sm_svc = SecretsManagerService()
 
         if not secrets_dict == None and not bool(secrets_dict) == False:
