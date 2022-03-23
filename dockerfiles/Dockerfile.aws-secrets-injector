@@ -3,7 +3,6 @@ FROM python:3.9-alpine3.14
 WORKDIR /app
 
 RUN python -m pip install --upgrade pip
-
 RUN apk add curl
 
 RUN cd /tmp && \
