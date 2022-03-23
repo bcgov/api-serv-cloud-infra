@@ -14,8 +14,8 @@ resource "aws_ecs_task_definition" "kong-task" {
       container_name = "kong"
       name        = "kong"
       image       = "${var.ecr_repository}/kong:${local.dev_versions.kong}"
-      cpu         = var.fargate_cpu
-      memory      = var.fargate_memory
+      cpu         = 896
+      memory      = 3512
       networkMode = "awsvpc"
       portMappings = [
         {
@@ -78,8 +78,47 @@ resource "aws_ecs_task_definition" "kong-task" {
           awslogs-stream-prefix = "ecs"
         }
       }
-      mountPoints = []
+      mountPoints = [{
+        sourceVolume = "secret-vol",
+        containerPath = "/etc/secrets/kongh"
+      }]
+      volumesFrom = []
+    },
+    {
+      essential   = false
+      container_name = "secrets-injector"
+      name        = "secrets-injector"
+      image       = "${var.ecr_repository}/aws-secrets-injector:${local.dev_versions.aws-secrets-injector}"
+      cpu         = 128
+      memory      = 512
+      networkMode = "awsvpc"
+      environment = [
+        {
+          name  = "AWS_SECRETS",
+          value = "{\"kongh-cluster-ca-crt\": \"ca.crt\", \"kongh-cluster-tls-crt\": \"tls.crt\"}"
+        },
+        {
+          name  = "FILE_PATH",
+          value = "/etc/secrets/kongh"
+        }
+      ]
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          awslogs-create-group  = "true"
+          awslogs-group         = "/ecs/secrets-injector"
+          awslogs-region        = var.aws_region
+          awslogs-stream-prefix = "ecs"
+        }
+      }
+      mountPoints = [{
+        sourceVolume = "secret-vol",
+        containerPath = "/etc/secrets/kongh"
+      }]
       volumesFrom = []
     }
   ])
+  volume {
+    name = "secret-vol"
+  }
 }
