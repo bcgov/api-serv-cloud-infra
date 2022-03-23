@@ -81,7 +81,7 @@ jobs:
   aws-secrets-injector:
     env:
       DOCKER_ITEM: aws-secrets-injector
-      PREFIX: ""
+      PREFIX: 0.0.1-
     name: aws-secrets-injector image
     runs-on: ubuntu-latest
     steps:
