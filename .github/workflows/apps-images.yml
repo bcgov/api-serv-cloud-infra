@@ -1,0 +1,28 @@
+name: Build Apps
+
+# Controls when the action will run. Triggers the workflow on push or pull request
+# events but only for the master branch
+on:
+  push:
+    branches: [dev]
+    paths: [apps/**]
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  aws-secrets-injector:
+    name: Docker Image for aws-secrets-injector
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: docker/build-push-action@v1
+        with:
+          registry: docker.pkg.github.com
+          username: $GITHUB_ACTOR
+          password: ${{ secrets.GITHUB_TOKEN }}
+          repository: bcgov/aws-secrets-injector
+          path: apps/aws-secrets-injector
+          dockerfile: apps/aws-secrets-injector/Dockerfile
+          tag_with_ref: true
+          tag_with_sha: false
+          add_git_labels: true
+          push: true
