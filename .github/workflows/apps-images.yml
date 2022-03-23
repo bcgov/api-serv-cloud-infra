@@ -19,7 +19,7 @@ jobs:
           registry: docker.pkg.github.com
           username: $GITHUB_ACTOR
           password: ${{ secrets.GITHUB_TOKEN }}
-          repository: bcgov/aws-secrets-injector
+          repository: bcgov/api-serv-cloud-infra/aws-secrets-injector
           path: apps/aws-secrets-injector
           dockerfile: apps/aws-secrets-injector/Dockerfile
           tag_with_ref: true
