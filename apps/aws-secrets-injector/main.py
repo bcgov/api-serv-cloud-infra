@@ -4,6 +4,10 @@ import logging
 import json
 import traceback
 
+# using root logger
+logging.basicConfig(level=os.getenv('LOG_LEVEL', default=logging.DEBUG),
+                    format='%(asctime)s-%(levelname)s-%(message)s', datefmt='%d-%b-%y %H:%M:%S')
+
 logger = logging.getLogger(__name__)
 
 def write_to_file(content, file_dir, file_name):

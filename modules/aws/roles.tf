@@ -25,8 +25,7 @@ resource "aws_iam_role" "ecs_task_execution_role" {
 resource "aws_iam_role_policy_attachment" "ecs_task_role_policy_attachment" {
   role       = aws_iam_role.ecs_task_execution_role.name
   for_each = toset([
-    "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy",
-    aws_iam_policy.secrets_manager_read_policy.arn
+    "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
   ])
   policy_arn = each.value
 }
@@ -93,6 +92,28 @@ resource "aws_iam_role_policy" "kong_container_cwlogs" {
               ],
               "Resource": [
                   "arn:aws:logs:*:*:*"
+              ]
+          }
+      ]
+  }
+EOF
+}
+
+resource "aws_iam_role_policy" "kong_container_get_secrets" {
+  name = "kong_container_get_secrets"
+  role = aws_iam_role.kong_container_role.id
+
+  policy = <<-EOF
+  {
+      "Version": "2012-10-17",
+      "Statement": [
+          {
+              "Effect": "Allow",
+              "Action": [
+                  "secretsmanager:GetSecretValue"
+              ],
+              "Resource": [
+                  "arn:aws:secretsmanager:ca-central-1:648498837764:secret:*"
               ]
           }
       ]
