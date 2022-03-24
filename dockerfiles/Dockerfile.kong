@@ -28,3 +28,5 @@ RUN luarocks install lua-resty-jwt 0.2.2-0 \
 USER kong
 
 ENV KONG_PLUGINS="bundled, oidc, bcgov-gwa-endpoint, gwa-ip-anonymity, kong-spec-expose, kong-upstream-jwt referer, jwt-keycloak"
+
+VOLUME ["/usr/local/kongh"]
