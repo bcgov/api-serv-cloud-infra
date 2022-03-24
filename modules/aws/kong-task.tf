@@ -10,12 +10,52 @@ resource "aws_ecs_task_definition" "kong-task" {
   tags                     = local.common_tags
   container_definitions = jsonencode([
     {
+      essential   = false
+      container_name = "secrets-injector"
+      name        = "secrets-injector"
+      image       = "${var.ecr_repository}/aws-secrets-injector:${local.dev_versions.aws-secrets-injector}"
+      cpu         = 128
+      memory      = 256
+      networkMode = "awsvpc"
+      environment = [
+        {
+          name  = "LOG_LEVEL",
+          value = "DEBUG"
+        },
+        {
+          name  = "AWS_REGION",
+          value = var.aws_region
+        },
+        {
+          name  = "AWS_SECRETS",
+          value = "{\"kongh-cluster-ca-crt\": \"ca.crt\", \"kongh-cluster-tls-crt\": \"tls.crt\"}"
+        },
+        {
+          name  = "FILE_PATH",
+          value = "/usr/local/kongh"
+        }
+      ]
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          awslogs-create-group  = "true"
+          awslogs-group         = "/ecs/secrets-injector"
+          awslogs-region        = var.aws_region
+          awslogs-stream-prefix = "ecs"
+        }
+      }
+      mountPoints = []
+      volumesFrom = [{
+        sourceContainer = "kong"
+      }]
+    },
+    {
       essential   = true
       container_name = "kong"
       name        = "kong"
       image       = "${var.ecr_repository}/kong:${local.dev_versions.kong}"
       cpu         = 896
-      memory      = 3512
+      memory      = 3768
       networkMode = "awsvpc"
       portMappings = [
         {
@@ -39,34 +79,6 @@ resource "aws_ecs_task_definition" "kong-task" {
         {
           name  = "AWS_REGION",
           value = var.aws_region
-        },
-        {
-          name  = "KONG_ROLE",
-          value = "data_plane"
-        },
-        {
-          name  = "KONG_PROXY_LISTEN",
-          value = "0.0.0.0:${var.kong_port_http}"
-        },
-        {
-          name  = "KONG_CLUSTER_CONTROL_PLANE",
-          value = "gwcluster-api-gov-bc-ca.dev.api.gov.bc.ca:443"
-        },
-        {
-          name  = "KONG_CLUSTER_MTLS",
-          value = "pki"
-        },
-        {
-          name  = "KONG_CLUSTER_CERT",
-          value = "/etc/secrets/kongh/tls.crt"
-        },
-        {
-          name  = "KONG_CLUSTER_CERT_KEY",
-          value = "/etc/secrets/kongh/tls.key"
-        },
-        {
-          name  = "KONG_CLUSTER_CA_CERT",
-          value = "/etc/secrets/kongh/ca.crt"
         },
         {
           name  = "KONG_DATABASE",
@@ -108,52 +120,12 @@ resource "aws_ecs_task_definition" "kong-task" {
       }
       mountPoints = [{
         sourceVolume  = "secret-vol",
-        containerPath = "/etc/secrets/kongh"
+        containerPath = "/usr/local/kongh"
       }]
       volumesFrom = []
       dependsOn   = [{
         containerName = "secrets-injector",
-        condition      = "COMPLETE"
-      }]
-    },
-    {
-      essential   = false
-      container_name = "secrets-injector"
-      name        = "secrets-injector"
-      image       = "${var.ecr_repository}/aws-secrets-injector:${local.dev_versions.aws-secrets-injector}"
-      cpu         = 128
-      memory      = 512
-      networkMode = "awsvpc"
-      environment = [
-        {
-          name  = "LOG_LEVEL",
-          value = "INFO"
-        },
-        {
-          name  = "AWS_REGION",
-          value = var.aws_region
-        },
-        {
-          name  = "AWS_SECRETS",
-          value = "{\"kongh-cluster-ca-crt\": \"ca.crt\", \"kongh-cluster-tls-crt\": \"tls.crt\"}"
-        },
-        {
-          name  = "FILE_PATH",
-          value = "/etc/secrets/kongh"
-        }
-      ]
-      logConfiguration = {
-        logDriver = "awslogs"
-        options = {
-          awslogs-create-group  = "true"
-          awslogs-group         = "/ecs/secrets-injector"
-          awslogs-region        = var.aws_region
-          awslogs-stream-prefix = "ecs"
-        }
-      }
-      mountPoints = []
-      volumesFrom = [{
-        sourceContainer = "kong"
+        condition     = "COMPLETE"
       }]
     }
   ])
