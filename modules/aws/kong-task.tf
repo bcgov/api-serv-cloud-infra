@@ -44,10 +44,11 @@ resource "aws_ecs_task_definition" "kong-task" {
           awslogs-stream-prefix = "ecs"
         }
       }
-      mountPoints = []
-      volumesFrom = [{
-        sourceContainer = "kong"
+      mountPoints = [{
+        sourceVolume  = "secret-vol",
+        containerPath = "/usr/local/kongh"
       }]
+      volumesFrom = []
     },
     {
       essential   = true
@@ -107,6 +108,34 @@ resource "aws_ecs_task_definition" "kong-task" {
         {
           name  = "KONG_ADMIN_LISTEN",
           value = "0.0.0.0:${var.kong_port_admin}"
+        },
+        {
+          name  = "KONG_ROLE",
+          value = "data_plane"
+        },
+        {
+          name  = "KONG_PROXY_LISTEN",
+          value = "0.0.0.0:${var.kong_port_http}"
+        },
+        {
+          name  = "KONG_CLUSTER_CONTROL_PLANE",
+          value = "gwcluster-api-gov-bc-ca.dev.api.gov.bc.ca:443"
+        },
+        {
+          name  = "KONG_CLUSTER_MTLS",
+          value = "pki"
+        },
+        {
+          name  = "KONG_CLUSTER_CERT",
+          value = "/usr/local/kongh/tls.crt"
+        },
+        {
+          name  = "KONG_CLUSTER_CERT_KEY",
+          value = "/usr/local/kongh/tls.key"
+        },
+        {
+          name  = "KONG_CLUSTER_CA_CERT",
+          value = "/usr/local/kongh/ca.crt"
         }
       ]
       logConfiguration = {
