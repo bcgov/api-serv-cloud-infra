@@ -107,13 +107,12 @@ resource "aws_ecs_task_definition" "kong-task" {
         }
       }
       mountPoints = [{
-        readOnly      = null,
         sourceVolume  = "secret-vol",
         containerPath = "/etc/secrets/kongh"
       }]
       volumesFrom = []
       dependsOn   = [{
-        ContainerName = "secrets-injector",
+        containerName = "secrets-injector",
         condition      = "COMPLETE"
       }]
     },
@@ -152,12 +151,10 @@ resource "aws_ecs_task_definition" "kong-task" {
           awslogs-stream-prefix = "ecs"
         }
       }
-      mountPoints = [{
-        readOnly      = null,
-        sourceVolume  = "secret-vol",
-        containerPath = "/etc/secrets/kongh"
+      mountPoints = []
+      volumesFrom = [{
+        sourceContainer = "kong"
       }]
-      volumesFrom = []
     }
   ])
   volume {
