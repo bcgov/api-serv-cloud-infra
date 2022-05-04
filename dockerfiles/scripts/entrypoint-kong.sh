@@ -2,6 +2,7 @@
 set -Eeo pipefail
 
 # added commands
+echo "waiting for certs to be mounted"
 sleep 30
 ls -lrta /usr/local/kongh
 
