@@ -35,7 +35,7 @@ variable "az_count" {
 }
 
 variable "health_check_path" {
-  default = "/"
+  default = "/status"
 }
 
 variable "fargate_cpu" {
