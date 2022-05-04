@@ -33,3 +33,7 @@ RUN chmod +x /entrypoint.sh
 USER kong
 
 ENV KONG_PLUGINS="bundled, oidc, bcgov-gwa-endpoint, gwa-ip-anonymity, kong-spec-expose, kong-upstream-jwt referer, jwt-keycloak"
+
+ENTRYPOINT ["/entrypoint.sh"]
+
+CMD ["kong", "docker-start"]
