@@ -6,6 +6,7 @@ USER root
 RUN apk add git
 
 ARG PLUGIN_VERSION=1.1.0-1
+
 ARG FORCE_BUILD=1
 
 RUN git clone https://github.com/ikethecoder/kong-plugin-jwt-keycloak.git
@@ -24,6 +25,10 @@ RUN luarocks install lua-resty-jwt 0.2.2-0 \
   && luarocks install kong-upstream-jwt \
   && luarocks install kong-plugin-referer \
   && luarocks install kong-plugin-jwt-keycloak/kong-plugin-jwt-keycloak-${PLUGIN_VERSION}.all.rock
+
+COPY ./dockerfiles/scripts/entrypoint-kong.sh /entrypoint.sh
+
+RUN chmod +x /entrypoint.sh
 
 USER kong
 
