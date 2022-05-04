@@ -28,7 +28,7 @@ resource "aws_ecs_task_definition" "kong-task" {
         },
         {
           name  = "AWS_SECRETS",
-          value = "{\"kongh-cluster-ca-crt\": \"ca.crt\", \"kongh-cluster-tls-crt\": \"tls.crt\"}"
+          value = "{\"kongh-cluster-ca-crt\": \"ca.crt\", \"kongh-cluster-tls-crt\": \"tls.crt\", \"kongh-cluster-tls-key\": \"tls.key\"}"
         },
         {
           name  = "FILE_PATH",
