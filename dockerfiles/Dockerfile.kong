@@ -26,7 +26,7 @@ RUN luarocks install lua-resty-jwt 0.2.2-0 \
   && luarocks install kong-plugin-referer \
   && luarocks install kong-plugin-jwt-keycloak/kong-plugin-jwt-keycloak-${PLUGIN_VERSION}.all.rock
 
-COPY /scripts/entrypoint-kong.sh /entrypoint.sh
+COPY ./dockerfiles/scripts/entrypoint-kong.sh /entrypoint.sh
 
 RUN chmod +x /entrypoint.sh
 
