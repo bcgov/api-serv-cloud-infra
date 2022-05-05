@@ -214,6 +214,10 @@ resource "aws_ecs_task_definition" "kong-task" {
       mountPoints = [{
         sourceVolume  = "secret-vol",
         containerPath = "/usr/local/kongh"
+      },
+      {
+        sourceVolume  = "kong-prefix",
+        containerPath = "/kong_prefix"
       }]
       volumesFrom = []
       dependsOn   = [{
@@ -224,5 +228,8 @@ resource "aws_ecs_task_definition" "kong-task" {
   ])
   volume {
     name = "secret-vol"
+  }
+  volume {
+    name = "kong-prefix"
   }
 }
