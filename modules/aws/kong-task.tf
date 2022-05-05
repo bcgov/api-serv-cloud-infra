@@ -217,7 +217,7 @@ resource "aws_ecs_task_definition" "kong-task" {
       },
       {
         sourceVolume  = "kong-prefix",
-        containerPath = "/kong_prefix"
+        containerPath = "/kong_prefix/"
       }]
       volumesFrom = []
       dependsOn   = [{
