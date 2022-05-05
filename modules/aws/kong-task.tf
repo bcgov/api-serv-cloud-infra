@@ -194,10 +194,6 @@ resource "aws_ecs_task_definition" "kong-task" {
           value = "0.0.0.0:8000, 0.0.0.0:8443 http2 ssl"
         },
         {
-          name  = "KONG_PREFIX",
-          value = "/kong_prefix/"
-        },
-        {
           name  = "KONG_PROXY_ERROR_LOG",
           value = "/dev/stderr"
         }
@@ -214,10 +210,6 @@ resource "aws_ecs_task_definition" "kong-task" {
       mountPoints = [{
         sourceVolume  = "secret-vol",
         containerPath = "/usr/local/kongh"
-      },
-      {
-        sourceVolume  = "kong-prefix",
-        containerPath = "/kong_prefix/"
       }]
       volumesFrom = []
       dependsOn   = [{
@@ -228,8 +220,5 @@ resource "aws_ecs_task_definition" "kong-task" {
   ])
   volume {
     name = "secret-vol"
-  }
-  volume {
-    name = "kong-prefix"
   }
 }
