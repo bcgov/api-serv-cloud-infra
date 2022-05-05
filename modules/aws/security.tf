@@ -14,8 +14,8 @@ resource "aws_security_group" "sg_ecs_service_kong" {
   ingress {
     description     = "Only from alb"
     protocol        = "tcp"
-    from_port       = var.kong_port_admin
-    to_port         = var.kong_port_admin
+    from_port       = var.kong_port_http
+    to_port         = var.kong_port_http
     security_groups = [data.aws_security_group.sg_kong.id]
   }
 

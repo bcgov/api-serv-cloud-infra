@@ -107,7 +107,7 @@ resource "aws_ecs_task_definition" "kong-task" {
         },
         {
           name  = "KONG_ADMIN_LISTEN",
-          value = "0.0.0.0:${var.kong_port_admin}"
+          value = "127.0.0.1:8444 http2 ssl"
         },
         {
           name  = "KONG_ROLE",
@@ -136,6 +136,70 @@ resource "aws_ecs_task_definition" "kong-task" {
         {
           name  = "KONG_CLUSTER_CA_CERT",
           value = "/usr/local/kongh/ca.crt"
+        },
+        {
+          name  = "KONG_CLUSTER_LISTEN",
+          value = "off"
+        },
+        {
+          name  = "KONG_HEADERS",
+          value = "latency_tokens"
+        },
+        {
+          name  = "KONG_LUA_PACKAGE_PATH",
+          value = "/opt/?.lua;/opt/?/init.lua;;"
+        },
+        {
+          name  = "KONG_NGINX_EVENTS_WORKER_CONNECTIONS",
+          value = "100000"
+        },
+        {
+          name  = "KONG_NGINX_PROXY_PROXY_MAX_TEMP_FILE_SIZE",
+          value = "8192m"
+        },
+        {
+          name  = "KONG_NGINX_WORKER_PROCESSES",
+          value = "1"
+        },
+        {
+          name  = "KONG_NGINX_WORKER_RLIMIT_NOFILE",
+          value = "200000"
+        },
+        {
+          name  = "KONG_NGINX_DAEMON",
+          value = "off"
+        },
+        {
+          name  = "KONG_UNTRUSTED_LUA_SANDBOX_REQUIRES",
+          value = "cjson.safe"
+        },
+        {
+          name  = "KONG_UNTRUSTED_LUA_SANDBOX_ENVIRONMENT",
+          value = "table.concat"
+        },
+        {
+          name  = "KONG_STREAM_LISTEN",
+          value = "off"
+        },
+        {
+          name  = "KONG_STATUS_LISTEN",
+          value = "0.0.0.0:8100"
+        },
+        {
+          name  = "KONG_REAL_IP_HEADER",
+          value = "X-Forwarded-For"
+        },
+        {
+          name  = "KONG_PROXY_LISTEN",
+          value = "0.0.0.0:8000, 0.0.0.0:8443 http2 ssl"
+        },
+        {
+          name  = "KONG_PREFIX",
+          value = "/kong_prefix/"
+        },
+        {
+          name  = "KONG_PROXY_ERROR_LOG",
+          value = "/dev/stderr"
         }
       ]
       logConfiguration = {

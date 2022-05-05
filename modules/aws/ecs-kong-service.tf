@@ -25,7 +25,7 @@ resource "aws_ecs_service" "kong" {
   load_balancer {
     target_group_arn = aws_alb_target_group.tg_kong.id
     container_name   = "kong"
-    container_port   = var.kong_port_admin
+    container_port   = var.kong_port_http
   }
 
   depends_on = [data.aws_alb_listener.alb_kong_http, aws_iam_role_policy_attachment.ecs_task_role_policy_attachment]
