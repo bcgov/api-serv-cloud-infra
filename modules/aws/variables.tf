@@ -63,6 +63,11 @@ variable "kong_port_admin" {
   default     = 8001
 }
 
+variable "kong_status_port_http" {
+  description = "Port exposed by the docker image to fetch instance status"
+  default     = 8100
+}
+
 variable "service_names" {
   description = "List of service names to use as subdomains"
   default     = ["startup-sample-project", "ssp"]

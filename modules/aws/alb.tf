@@ -27,6 +27,7 @@ resource "aws_alb_target_group" "tg_kong" {
     matcher             = "200"
     timeout             = "3"
     path                = var.health_check_path
+    port                = var.kong_status_port_http
     unhealthy_threshold = "2"
   }
 

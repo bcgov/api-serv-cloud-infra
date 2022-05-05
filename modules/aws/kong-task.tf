@@ -69,7 +69,7 @@ resource "aws_ecs_task_definition" "kong-task" {
         },
         {
           protocol      = "tcp"
-          containerPort = var.kong_port_admin
+          containerPort = var.kong_status_port_http
         },
         {
           protocol      = "tcp"
@@ -183,7 +183,7 @@ resource "aws_ecs_task_definition" "kong-task" {
         },
         {
           name  = "KONG_STATUS_LISTEN",
-          value = "0.0.0.0:8100"
+          value = "0.0.0.0:${var.kong_status_port_http}"
         },
         {
           name  = "KONG_REAL_IP_HEADER",
