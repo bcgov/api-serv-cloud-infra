@@ -1,13 +1,20 @@
-
-FROM kong:2.6.0
+FROM kong:2.7.1
 
 USER root
 
 RUN apk add git
 
 ARG PLUGIN_VERSION=1.1.0-1
+ARG PLUGIN_OIDC_VERSION=1.2.4-2
+ARG PLUGIN_OIDC_CONSUMER_VERSION=0.0.1-0
+ARG FORCE_BUILD=2
 
-ARG FORCE_BUILD=1
+RUN luarocks install lua-resty-openidc
+RUN git clone -b v${PLUGIN_OIDC_VERSION} https://github.com/revomatico/kong-oidc.git
+RUN (cd kong-oidc && luarocks make && luarocks pack kong-oidc ${PLUGIN_OIDC_VERSION})
+
+RUN git clone https://github.com/ikethecoder/kong-oidc-consumer.git
+RUN (cd kong-oidc-consumer && luarocks make && luarocks pack kong-oidc-consumer ${PLUGIN_OIDC_CONSUMER_VERSION})
 
 RUN git clone https://github.com/ikethecoder/kong-plugin-jwt-keycloak.git
 RUN (cd kong-plugin-jwt-keycloak && luarocks make && luarocks pack kong-plugin-jwt-keycloak ${PLUGIN_VERSION})
@@ -20,12 +27,17 @@ RUN (cd gwa-ip-anonymity && ./devBuild.sh)
 
 RUN luarocks install lua-resty-jwt 0.2.2-0 \
   && luarocks install lua-resty-openidc 1.6.1-1 \
-  && luarocks install kong-oidc \
   && luarocks install kong-spec-expose \
   && luarocks install kong-upstream-jwt \
   && luarocks install kong-plugin-referer \
+  && luarocks install kong-upstream-jwt \
+  && luarocks install kong-oidc/kong-oidc-${PLUGIN_OIDC_VERSION}.all.rock \
+  && luarocks install kong-oidc-consumer/kong-oidc-consumer-${PLUGIN_OIDC_CONSUMER_VERSION}.all.rock \
   && luarocks install kong-plugin-jwt-keycloak/kong-plugin-jwt-keycloak-${PLUGIN_VERSION}.all.rock
+
+RUN git clone https://github.com/Kong/priority-updater.git
+RUN (cd priority-updater/template/plugin && KONG_PRIORITY=902 KONG_PRIORITY_NAME=rate-limiting /usr/local/openresty/luajit/bin/luajit ../priority.lua)
 
 USER kong
 
-ENV KONG_PLUGINS="bundled, oidc, bcgov-gwa-endpoint, gwa-ip-anonymity, kong-spec-expose, kong-upstream-jwt referer, jwt-keycloak"
+ENV KONG_PLUGINS="bundled, rate-limiting_902, oidc, oidc-consumer, bcgov-gwa-endpoint, gwa-ip-anonymity, kong-spec-expose, kong-upstream-jwt, referer, jwt-keycloak, kong-upstream-jwt"
