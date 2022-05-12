@@ -87,7 +87,7 @@ resource "aws_ecs_task_definition" "kong-task" {
         },
         {
           name  = "KONG_PLUGINS",
-          value = "bundled, oidc, gwa-ip-anonymity, kong-spec-expose, bcgov-gwa-endpoint, referer, jwt-keycloak, kong-upstream-jwt"
+          value = "bundled, rate-limiting_902, oidc, oidc-consumer, gwa-ip-anonymity, kong-spec-expose, bcgov-gwa-endpoint, referer, jwt-keycloak, kong-upstream-jwt"
         },
         {
           name  = "KONG_PROXY_ACCESS_LOG",
