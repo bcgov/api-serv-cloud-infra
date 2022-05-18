@@ -41,6 +41,8 @@ Even though we provide the certs to them to add manually, we have to take care o
 
 #### Through API Gateway
 
+![alt text](assets/routing-api-gateway.png "Traffic originating from API Gateway and routed to VPC private resources through VPC links")
+
 API Gateway supports REST, HTTP and WebSocker APIs. A HTTP API can be used for creating a single endpoint, which accepts requests and routes them to Kong Gateway's Data Plane through ALB. For the route to able to send the traffic, a VPC link is required which instructs AWS API Gateway to setup Elastic Network Interfaces, which enable the communication between the route and VPC resources such as ALB.
 
 ##### HTTP API
@@ -51,6 +53,12 @@ API Gateway supports REST, HTTP and WebSocker APIs. A HTTP API can be used for c
 
 ##### VPC Link
 
+VPC links are built on top of AWS hyperplane, an internal network virtualization platform that supports inter VPC connectivity and routing between VPCs. It is a type of AWS private link thats used by API gateways to support private APIs and Integrations
+
+VPC links for HTTP API do not use AWS Private Link but it uses VPC-to-VPC NAT, which provides a higher level of abstraction
+
+Steps to create a VPC link:
+
 - Add a VPC link for HTTP APIs with existing vpc and choose subnets where our kong is deployed
 - Choose a security group that governs incoming and outgoing traffic to ALB. Update security group to allow inbound HTTP/80 traffic to ALB
 
@@ -58,7 +66,6 @@ API Gateway supports REST, HTTP and WebSocker APIs. A HTTP API can be used for c
 
 - Navigate to created API and navigate to the integrations screen
 - Select the route and add an integration using VPC link and it takes a minute or two to setup the ENIs
-
 
 ##### Future Work
 
@@ -87,3 +94,7 @@ API Gateway supports REST, HTTP and WebSocker APIs. A HTTP API can be used for c
 - Update upstreams to validate the JWT signed token sent into the HTTP header `JWT` of the proxied requests through kong
 - The upstreams should be made available with the public key
 
+#### Option 5
+
+- Creating an interface VPC endpoint can enable kong proxy to connect to endpoint service that is hosted by client
+- Through private links, a connection can be established between two VPCs
