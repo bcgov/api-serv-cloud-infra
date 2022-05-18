@@ -33,9 +33,11 @@
 
 ### Traffic flow
 
+![alt text](assets/aws-sea-architecture-overview.png "AWS SEA Architecture Overview")
+
 #### Through Cloudfront
 
-Currently the routing between the internet and AWS resources is setup through SEA. There are firewalls between the internet and the internal application load balancer (iALB) maintained by the cloud team. As part of the SEA architecture, the cloudfront service is the entry point for a request and it sends the traffic to internal iALB. Then the iALB re-directs it to team specific ALB. As of now the iALB is configured with a single domain *.nimbus.cloud.gov.bc.ca and the cloud team has no automation setup to add custom domains to their iALB.
+Currently the routing between the internet and AWS resources is setup through SEA. There are firewalls between the internet and the internal application load balancer (iALB) maintained by the cloud team. As part of the SEA architecture, the cloudfront service is the entry point for a request and it sends the traffic to internal iALB and reaches transit gateway, where the traffic is re-directed to team specific VPC and to an ALB, based on the route table configuration at the transit gateway. As of now the iALB is configured with a single domain `*.nimbus.cloud.gov.bc.ca` and the cloud team has no automation setup to add custom domains to their iALB.
 
 Even though we provide the certs to them to add manually, we have to take care of the DNS entries that point to their iALB. Alternative is to use AWS API Gateway (skips cloudfront and cloud team’s ALB) to route the traffic directly to our ALB.
 
