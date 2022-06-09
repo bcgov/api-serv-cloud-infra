@@ -7,12 +7,12 @@ data "aws_alb" "main" {
 }
 
 # Redirect all traffic from the ALB to the target group
-data "aws_alb_listener" "https_listener_kong" {
+data "aws_lb_listener" "https_listener_kong" {
   load_balancer_arn = data.aws_alb.main.id
   port              = 443
 }
 
-resource "aws_alb_target_group" "tg_kong" {
+resource "aws_lb_target_group" "tg_kong" {
   name                 = "tg-kong"
   port                 = var.kong_port_http
   protocol             = "HTTP"
@@ -46,11 +46,11 @@ resource "aws_lb_listener" "http_listener_kong" {
 }
 
 resource "aws_lb_listener_rule" "forward_https_kong" {
-  listener_arn = data.aws_alb_listener.https_listener_kong.arn
+  listener_arn = data.aws_lb_listener.https_listener_kong.arn
 
   action {
     type             = "forward"
-    target_group_arn = aws_alb_target_group.tg_kong.arn
+    target_group_arn = aws_lb_target_group.tg_kong.arn
   }
 
   condition {

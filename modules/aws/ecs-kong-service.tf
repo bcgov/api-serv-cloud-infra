@@ -23,12 +23,12 @@ resource "aws_ecs_service" "kong" {
   }
 
   load_balancer {
-    target_group_arn = aws_alb_target_group.tg_kong.id
+    target_group_arn = aws_lb_target_group.tg_kong.id
     container_name   = "kong"
     container_port   = var.kong_port_http
   }
 
-  depends_on = [data.aws_alb_listener.https_listener_kong, aws_iam_role_policy_attachment.ecs_task_role_policy_attachment]
+  depends_on = [data.aws_lb_listener.https_listener_kong, aws_iam_role_policy_attachment.ecs_task_role_policy_attachment]
 
   tags = local.common_tags
 }
