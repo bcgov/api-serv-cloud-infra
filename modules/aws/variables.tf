@@ -15,7 +15,7 @@ variable "aws_region" {
 variable "common_tags" {
   description = "Common tags for created resources"
   default = {
-    Application = "Kong Data Plane"
+    application = "kong-data-plane"
   }
 }
 
@@ -66,6 +66,11 @@ variable "kong_port_admin" {
 variable "kong_status_port_http" {
   description = "Port exposed by the docker image to fetch instance status"
   default     = 8100
+}
+
+variable "redis_port_http" {
+  description = "Redis port"
+  default     = 6379
 }
 
 variable "service_names" {

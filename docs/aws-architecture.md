@@ -62,12 +62,16 @@ VPC links for HTTP API do not use AWS Private Link but it uses VPC-to-VPC NAT, w
 Steps to create a VPC link:
 
 - Add a VPC link for HTTP APIs with existing vpc and choose subnets where our kong is deployed
-- Choose a security group that governs incoming and outgoing traffic to ALB. Update security group to allow inbound HTTP/80 traffic to ALB
+- Choose a security group that governs incoming and outgoing traffic to ALB. Make sure the security group allows inbound HTTP/80 traffic to ALB
 
 ##### Integration
 
 - Navigate to created API and navigate to the integrations screen
 - Select the route and add an integration using VPC link and it takes a minute or two to setup the ENIs
+
+##### Update ALB Listeners
+
+- Add a new listener that listens at port 80 and forwards traffic to kong target group
 
 ##### Future Work
 
