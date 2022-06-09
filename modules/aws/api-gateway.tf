@@ -9,7 +9,7 @@ resource "aws_apigatewayv2_integration" "aps_kong_gateway_integration" {
   integration_type = "HTTP_PROXY"
 
   integration_method = "ANY"
-  integration_uri    = data.aws_alb.main.id
+  integration_uri    = data.aws_alb.main.arn
   connection_type    = "VPC_LINK"
   connection_id      = aws_apigatewayv2_vpc_link.aps_kong_gateway_vpc_link.id
 }
