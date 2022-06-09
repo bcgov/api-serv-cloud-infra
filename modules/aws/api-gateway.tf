@@ -25,3 +25,13 @@ resource "aws_apigatewayv2_vpc_link" "aps_kong_gateway_vpc_link" {
   security_group_ids = [aws_security_group.sg_ecs_service_kong.id]
   subnet_ids         = module.network.aws_subnet_ids.app.ids
 }
+
+resource "aws_apigatewayv2_stage" "aps_kong_gateway_stage_default" {
+  api_id = aws_apigatewayv2_api.aps_kong_gateway_api.id
+  name   = "$default"
+  auto_deploy = true
+}
+
+output "kong_endpoint_url" {
+  value = aws_apigatewayv2_stage.aps_kong_gateway_stage_default.invoke_url
+}
