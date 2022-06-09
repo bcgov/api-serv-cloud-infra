@@ -22,7 +22,7 @@ resource "aws_security_group" "sg_ecs_service_kong" {
   }
 
   ingress {
-    description     = "Only from alb - health check"
+    description     = "Only from alb - status"
     protocol        = "tcp"
     from_port       = var.kong_status_port_http
     to_port         = var.kong_status_port_http
