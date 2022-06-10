@@ -51,7 +51,7 @@ resource "aws_security_group" "sg_kong_redis" {
     protocol        = "tcp"
     from_port       = var.redis_port_http
     to_port         = var.redis_port_http
-    security_groups = [data.aws_security_group.sg_kong.id]
+    security_groups = [data.aws_security_group.sg_ecs_service_kong.id]
   }
 
   tags = var.common_tags
