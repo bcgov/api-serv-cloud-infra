@@ -1,4 +1,5 @@
 resource "aws_elasticache_cluster" "kong_redis" {
+  count                         = 1
   cluster_id                    = "kong-redis"
   engine                        = "redis"
   node_type                     = "cache.t3.micro"
