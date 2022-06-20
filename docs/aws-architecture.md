@@ -27,7 +27,7 @@
 
 `ENI`: Elastic network interface that enables task networking
 
-`Elastic Cache`: Caching service for redis
+`Elasticache`: Caching service for redis
 
 `ECS`: Elastic container service that enables fargate launch type
 
@@ -104,3 +104,50 @@ Steps to create a VPC link:
 
 - Creating an interface VPC endpoint can enable kong proxy to connect to endpoint service that is hosted by client
 - Through private links, a connection can be established between two VPCs
+
+
+### Elasticache
+
+- Kong uses redis to store rate limit counters
+- Every data plane has its own redis instance to store the counters
+- AWS Elasticache supports `AUTH` when following conditions are met
+  - Create Redis Cluster with atleast one primary node and zero or more replicas rather than single node instance
+  - Enable encryption in transit (TLS)
+  - Enable Authenticating and Authorizing access (Access Control)
+  - Choose `Redis AUTH default user access`
+- Example of rate-limit plugin, which can be applied both at service or route levels
+- Use `primary endpoint` of the redis cluster as the redis host and redis server name under rate limit plugin `config`
+  ```json
+  {
+	"enabled": true,
+	"config": {
+		"fault_tolerant": false,
+        "hide_client_headers": false,
+        "redis_ssl": true,
+        "redis_ssl_verify": false,
+        "second": null,
+        "minute": 5,
+        "hour": null,
+        "day": null,
+        "month": null,
+        "year": null,
+        "header_name": null,
+        "path": null,
+        "redis_timeout": 6000,
+        "redis_database": 0,
+		"redis_host": "master.kong-redis-cluster.hg9nln.cac1.cache.amazonaws.com",
+        "redis_port": 6379,
+        "redis_password": "<AUTH_TOKEN>",
+        "policy": "redis",
+        "redis_server_name": "master.kong-redis-cluster.hg9nln.cac1.cache.amazonaws.com"
+	},
+	"tags": [
+		"ns.$NS"
+	],
+	"name": "rate-limiting",
+	"protocols": [
+		"http",
+		"https"
+	]
+  }
+  ```

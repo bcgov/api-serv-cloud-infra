@@ -7,12 +7,12 @@ data "aws_secretsmanager_secret_version" "redis-ratelimit-secret" {
 }
 
 resource "aws_elasticache_replication_group" "kong_redis_cluster" {
-  count                               = 1
-  replication_group_id                = "kong-redis-cluster-grp"
+  replication_group_id                = "kong-redis-cluster"
   replication_group_description       = "Kong Redis Cluster Group"
   engine                              = "redis"
   engine_version                      = "6.x"
   node_type                           = "cache.t3.micro"
+  number_cache_clusters               = 1
   port                                = 6379
   transit_encryption_enabled          = true
   auth_token                          = data.aws_secretsmanager_secret_version.redis-ratelimit-secret.secret_string
