@@ -54,69 +54,7 @@ EOF
 
 resource "aws_iam_role" "kong_container_role" {
   name = "kong_container_role"
-
-  assume_role_policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Action": "sts:AssumeRole",
-      "Principal": {
-        "Service": "ecs-tasks.amazonaws.com"
-      },
-      "Effect": "Allow",
-      "Sid": ""
-    }
-  ]
-}
-EOF
-
+  assume_role_policy = data.aws_iam_policy_document.ecs_task_execution_role.json
   tags = local.common_tags
 }
 
-resource "aws_iam_role_policy" "kong_container_cwlogs" {
-  name = "kong_container_cwlogs"
-  role = aws_iam_role.kong_container_role.id
-
-  policy = <<-EOF
-  {
-      "Version": "2012-10-17",
-      "Statement": [
-          {
-              "Effect": "Allow",
-              "Action": [
-                  "logs:CreateLogGroup",
-                  "logs:CreateLogStream",
-                  "logs:PutLogEvents",
-                  "logs:DescribeLogStreams"
-              ],
-              "Resource": [
-                  "arn:aws:logs:*:*:*"
-              ]
-          }
-      ]
-  }
-EOF
-}
-
-resource "aws_iam_role_policy" "kong_container_get_secrets" {
-  name = "kong_container_get_secrets"
-  role = aws_iam_role.kong_container_role.id
-
-  policy = <<-EOF
-  {
-      "Version": "2012-10-17",
-      "Statement": [
-          {
-              "Effect": "Allow",
-              "Action": [
-                  "secretsmanager:GetSecretValue"
-              ],
-              "Resource": [
-                  "arn:aws:secretsmanager:ca-central-1:648498837764:secret:*"
-              ]
-          }
-      ]
-  }
-EOF
-}

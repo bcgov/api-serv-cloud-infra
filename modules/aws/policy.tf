@@ -1,23 +1,50 @@
-resource "aws_iam_policy" "secrets_manager_read_policy" {
-  name        = "secrets-manager-read-policy"
-  description = "A policy for reading secrets from secrets manager"
+resource "aws_iam_policy" "container_manage_logs" {
+  name = "container_manage_logs"
 
-  policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Action": [
-        "secretsmanager:GetSecretValue"
-      ],
-      "Effect": "Allow",
-      "Resource": [
-          "arn:aws:secretsmanager:ca-central-1:648498837764:secret:kongh-cluster-ca-crt-hiYRLu",
-          "arn:aws:secretsmanager:ca-central-1:648498837764:secret:kongh-cluster-tls-crt-9NVKnJ",
-          "arn:aws:secretsmanager:ca-central-1:648498837764:secret:kongh-cluster-tls-key-D9iCSd"
-      ]
-    }
-  ]
+  policy = jsonencode({
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Effect": "Allow",
+        "Action": [
+          "logs:CreateLogGroup",
+          "logs:CreateLogStream",
+          "logs:PutLogEvents",
+          "logs:DescribeLogStreams"
+        ],
+        "Resource": [
+          "arn:aws:logs:*:*:*"
+        ]
+      }
+    ]
+  })
 }
-EOF
+
+resource "aws_iam_policy" "container_get_secrets" {
+  name = "container_get_secrets"
+
+  policy = jsonencode({
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Effect": "Allow",
+        "Action": [
+          "secretsmanager:GetSecretValue"
+        ],
+        "Resource": [
+          "arn:aws:secretsmanager:ca-central-1:648498837764:secret:*"
+        ]
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "kong_manage_logs" {
+  role = aws_iam_role.kong_container_role.name
+  policy_arn = aws_iam_policy.container_manage_logs.arn
+}
+
+resource "aws_iam_role_policy_attachment" "kong_get_secrets" {
+  role = aws_iam_role.kong_container_role.name
+  policy_arn = aws_iam_policy.container_get_secrets.arn
 }
