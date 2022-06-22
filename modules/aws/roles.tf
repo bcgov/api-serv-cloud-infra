@@ -58,3 +58,8 @@ resource "aws_iam_role" "kong_container_role" {
   tags = local.common_tags
 }
 
+resource "aws_iam_role" "prom_container_role" {
+  name = "kong_container_role"
+  assume_role_policy = data.aws_iam_policy_document.ecs_task_execution_role.json
+  tags = local.common_tags
+}

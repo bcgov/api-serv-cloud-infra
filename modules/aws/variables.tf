@@ -73,6 +73,11 @@ variable "redis_port_http" {
   default     = 6379
 }
 
+variable "prom_port_http" {
+  description = "Prometheus port"
+  default     = 9090
+}
+
 variable "service_names" {
   description = "List of service names to use as subdomains"
   default     = ["startup-sample-project", "ssp"]

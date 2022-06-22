@@ -48,3 +48,8 @@ resource "aws_iam_role_policy_attachment" "kong_get_secrets" {
   role = aws_iam_role.kong_container_role.name
   policy_arn = aws_iam_policy.container_get_secrets.arn
 }
+
+resource "aws_iam_role_policy_attachment" "prom_manage_logs" {
+  role = aws_iam_role.prom_container_role.name
+  policy_arn = aws_iam_policy.container_manage_logs.arn
+}
