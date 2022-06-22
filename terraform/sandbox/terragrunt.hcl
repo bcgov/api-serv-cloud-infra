@@ -16,7 +16,7 @@ generate "tfvars" {
   if_exists         = "overwrite"
   disable_signature = true
   contents          = <<-EOF
-repository_names = ["aps-infra/kong", "aps-infra/aws-secrets-injector", "aps-infra/prometheus"]
+repository_names = ["aps-infra/kong", "aps-infra/aws-secrets-injector", "aps-infra/prometheus", "aps-infra/dp-query-api", "aps-infra/prom-metrics-proxy"]
 read_principals = ${local.read_principals}
 EOF
 }
