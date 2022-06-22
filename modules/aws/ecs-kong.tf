@@ -90,8 +90,8 @@ resource "aws_ecs_task_definition" "kong-task" {
       container_name = "kong"
       name        = "kong"
       image       = "${var.ecr_repository}/kong:${local.dev_versions.kong}"
-      cpu         = 896
-      memory      = 3768
+      cpu         = 1024
+      memory      = 4096
       networkMode = "awsvpc"
       portMappings = [
         {
@@ -251,9 +251,102 @@ resource "aws_ecs_task_definition" "kong-task" {
         containerName = "secrets-injector",
         condition     = "COMPLETE"
       }]
+    },
+    {
+      essential   = false
+      container_name = "dp-query-api"
+      name        = "dp-query-api"
+      image       = "${var.ecr_repository}/dp-query-api:${local.dev_versions.dp-query-api}"
+      cpu         = 128
+      memory      = 256
+      networkMode = "awsvpc"
+      portMappings = [{
+          protocol      = "tcp"
+          containerPort = 4000
+      }]
+      environment = [
+        {
+          name  = "MAX_WORKERS",
+          value = "1"
+        },
+        {
+          name  = "CACHE_FILE",
+          value = "/kong_prefix/config.cache.json.gz"
+        },
+        {
+          name  = "PORT",
+          value = "4000"
+        }
+      ]
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          awslogs-create-group  = "true"
+          awslogs-group         = "/ecs/dp-query-api"
+          awslogs-region        = var.aws_region
+          awslogs-stream-prefix = "ecs"
+        }
+      }
+      mountPoints = [{
+        sourceVolume  = "dp-aws-kong-prefix-dir",
+        containerPath = "/kong_prefix/"
+      }]
+      volumesFrom = []
+      dependsOn   = [{
+        containerName = "kong",
+        condition     = "HEALTHY"
+      }]
+    },
+    {
+      essential   = false
+      container_name = "prom-metrics-proxy"
+      name        = "prom-metrics-proxy"
+      image       = "${var.ecr_repository}/prom-metrics-proxy:${local.dev_versions.prom-metrics-proxy}"
+      cpu         = 128
+      memory      = 256
+      networkMode = "awsvpc"
+      portMappings = [{
+          protocol      = "tcp"
+          containerPort = 3001
+      }]
+      environment = [
+        {
+          name  = "MYAPP_KONGURL",
+          value = "http://127.0.0.1:4000"
+        },
+        {
+          name  = "MYAPP_METRICSURL",
+          value = "http://127.0.0.1:8100"
+        },
+        {
+          name  = "MYAPP_PORT",
+          value = "3001"
+        }
+      ]
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          awslogs-create-group  = "true"
+          awslogs-group         = "/ecs/prom-metrics-proxy"
+          awslogs-region        = var.aws_region
+          awslogs-stream-prefix = "ecs"
+        }
+      }
+      mountPoints = [{
+        sourceVolume  = "dp-aws-kong-prefix-dir",
+        containerPath = "/kong_prefix/"
+      }]
+      volumesFrom = []
+      dependsOn   = [{
+        containerName = "kong",
+        condition     = "HEALTHY"
+      }]
     }
   ])
   volume {
     name = "secret-vol"
+  }
+  volume {
+    name = "dp-aws-kong-prefix-dir"
   }
 }
