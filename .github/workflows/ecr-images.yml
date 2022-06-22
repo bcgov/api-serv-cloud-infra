@@ -212,3 +212,138 @@ jobs:
           file: dockerfiles/Dockerfile.${{env.DOCKER_ITEM}}
           push: true
           tags: ${{ env.ECR_URI }}/${{env.DOCKER_ITEM}}:${{env.PREFIX}}${{steps.slug.outputs.sha8}}
+
+  dp-query-api:
+    env:
+      DOCKER_ITEM: dp-query-api
+      PREFIX: ""
+    name: dp-query-api image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v2
+      - id: files
+        uses: jitterbit/get-changed-files@v1
+      - id: changes
+        name: Any changes?
+        run:
+          "echo '::set-output name=BUILD::${{env.BUILD_ALL}}'\nfor changed_file in\
+          \ ${{ steps.files.outputs.all }}; do\n  echo \"Changed file - do I care? ${changed_file}.\"\
+          \n  if  [[ ${changed_file} == dockerfiles/${{env.DOCKER_ITEM}}/* ]] || [[\
+          \ ${changed_file} == dockerfiles/Dockerfile.${{env.DOCKER_ITEM}} ]] ;\n  then\n\
+          \    echo \"Detected change!\"\n    echo '::set-output name=BUILD::YES'\n\
+          \  fi\ndone\n"
+
+      - id: slug
+        name: Get short SHA
+        run: echo "::set-output name=sha8::$(echo ${GITHUB_SHA} | cut -c1-8)"
+
+      - if: steps.changes.outputs.BUILD == 'YES'
+        name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          role-duration-seconds: 900
+          role-session-name: ${{env.DOCKER_ITEM}}-build-github-action
+          role-skip-session-tagging: true
+
+      - if: steps.changes.outputs.BUILD == 'YES'
+        name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - if: steps.changes.outputs.BUILD == 'YES'
+        uses: actions/cache@v2
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
+      - if: steps.changes.outputs.BUILD == 'YES'
+        name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v1
+
+      - if: steps.changes.outputs.BUILD == 'YES'
+        name: Build and push
+        id: docker_build
+        uses: docker/build-push-action@v2
+        with:
+          builder: ${{ steps.buildx.outputs.name }}
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
+          context: .
+          file: dockerfiles/Dockerfile.${{env.DOCKER_ITEM}}
+          push: true
+          tags: ${{ env.ECR_URI }}/${{env.DOCKER_ITEM}}:${{env.PREFIX}}${{steps.slug.outputs.sha8}}
+  prom-metrics-proxy:
+    env:
+      DOCKER_ITEM: prom-metrics-proxy
+      PREFIX: ""
+    name: prom-metrics-proxy image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v2
+      - id: files
+        uses: jitterbit/get-changed-files@v1
+      - id: changes
+        name: Any changes?
+        run:
+          "echo '::set-output name=BUILD::${{env.BUILD_ALL}}'\nfor changed_file in\
+          \ ${{ steps.files.outputs.all }}; do\n  echo \"Changed file - do I care? ${changed_file}.\"\
+          \n  if  [[ ${changed_file} == dockerfiles/${{env.DOCKER_ITEM}}/* ]] || [[\
+          \ ${changed_file} == dockerfiles/Dockerfile.${{env.DOCKER_ITEM}} ]] ;\n  then\n\
+          \    echo \"Detected change!\"\n    echo '::set-output name=BUILD::YES'\n\
+          \  fi\ndone\n"
+
+      - id: slug
+        name: Get short SHA
+        run: echo "::set-output name=sha8::$(echo ${GITHUB_SHA} | cut -c1-8)"
+
+      - if: steps.changes.outputs.BUILD == 'YES'
+        name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          role-duration-seconds: 900
+          role-session-name: ${{env.DOCKER_ITEM}}-build-github-action
+          role-skip-session-tagging: true
+
+      - if: steps.changes.outputs.BUILD == 'YES'
+        name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - if: steps.changes.outputs.BUILD == 'YES'
+        uses: actions/cache@v2
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
+      - if: steps.changes.outputs.BUILD == 'YES'
+        name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v1
+
+      - if: steps.changes.outputs.BUILD == 'YES'
+        name: Build and push
+        id: docker_build
+        uses: docker/build-push-action@v2
+        with:
+          builder: ${{ steps.buildx.outputs.name }}
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
+          context: .
+          file: dockerfiles/Dockerfile.${{env.DOCKER_ITEM}}
+          push: true
+          tags: ${{ env.ECR_URI }}/${{env.DOCKER_ITEM}}:${{env.PREFIX}}${{steps.slug.outputs.sha8}}
