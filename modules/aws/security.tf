@@ -56,3 +56,9 @@ resource "aws_security_group" "sg_kong_redis" {
 
   tags = var.common_tags
 }
+
+resource "aws_security_group" "sg_ecs_service_prom" {
+  name        = "prom-ecs-sg"
+  description = "ECS Prometheus"
+  vpc_id      = module.network.aws_vpc.id
+}
