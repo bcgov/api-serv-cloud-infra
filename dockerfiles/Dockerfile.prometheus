@@ -1,2 +1,1 @@
 FROM bitnami/prometheus:2.36.2
-
