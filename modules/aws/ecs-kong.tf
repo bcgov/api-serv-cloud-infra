@@ -294,7 +294,7 @@ resource "aws_ecs_task_definition" "kong-task" {
       volumesFrom = []
       dependsOn   = [{
         containerName = "kong",
-        condition     = "HEALTHY"
+        condition     = "START"
       }]
     },
     {
@@ -339,7 +339,7 @@ resource "aws_ecs_task_definition" "kong-task" {
       volumesFrom = []
       dependsOn   = [{
         containerName = "kong",
-        condition     = "HEALTHY"
+        condition     = "START"
       }]
     }
   ])
