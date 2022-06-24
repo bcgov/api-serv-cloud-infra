@@ -36,10 +36,13 @@ resource "aws_ecs_task_definition" "adot_prom_collector_task" {
     container_name = "adot-prom-collector"
     name        = "adot-prom-collector"
     image       = "amazon/aws-otel-collector:v0.11.0"
-    environment = [{
-      name  = "AOT_CONFIG_CONTENT",
-      valueFrom = "otel-collector-config"
-    }]
+    networkMode = "awsvpc"
+    secrets = [
+      {
+        name  = "AOT_CONFIG_CONTENT",
+        valueFrom = "otel-collector-config"
+      }
+    ]
     logConfiguration = {
       logDriver = "awslogs"
       options = {
