@@ -227,10 +227,6 @@ resource "aws_ecs_task_definition" "kong-task" {
         {
           name  = "KONG_PROXY_ERROR_LOG",
           value = "/dev/stderr"
-        },
-        {
-          name  = "KONG_PREFIX",
-          value = "/kong_prefix/"
         }
       ]
       logConfiguration = {
