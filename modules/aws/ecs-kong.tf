@@ -256,10 +256,12 @@ resource "aws_ecs_task_definition" "kong-task" {
       cpu         = 128
       memory      = 256
       networkMode = "awsvpc"
-      portMappings = [{
+      portMappings = [
+        {
           protocol      = "tcp"
           containerPort = 4000
-      }]
+        }
+      ]
       environment = [
         {
           name  = "MAX_WORKERS",
@@ -301,18 +303,20 @@ resource "aws_ecs_task_definition" "kong-task" {
       cpu         = 128
       memory      = 256
       networkMode = "awsvpc"
-      portMappings = [{
+      portMappings = [
+        {
           protocol      = "tcp"
           containerPort = 3001
-      }]
+        }
+      ]
       environment = [
         {
           name  = "MYAPP_KONGURL",
-          value = "http://127.0.0.1:4000"
+          value = "http://localhost:4000"
         },
         {
           name  = "MYAPP_METRICSURL",
-          value = "http://127.0.0.1:8100"
+          value = "http://localhost:8100"
         },
         {
           name  = "MYAPP_PORT",

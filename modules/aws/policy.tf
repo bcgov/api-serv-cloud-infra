@@ -31,10 +31,10 @@ resource "aws_iam_policy" "ssm_get_params_policy" {
   })
 }
 
-resource "aws_iam_role_policy_attachment" "ecs_task_execution_ssm_get_params_attach" {
-  role = aws_iam_role.ecs_prom_task_execution_role.id
-  policy_arn = aws_iam_policy.ssm_get_params_policy.arn
-}
+# resource "aws_iam_role_policy_attachment" "ecs_task_execution_ssm_get_params_attach" {
+#   role = aws_iam_role.ecs_prom_task_execution_role.id
+#   policy_arn = aws_iam_policy.ssm_get_params_policy.arn
+# }
 
 resource "aws_iam_policy" "ecs_task_cwlogs_policy" {
   name = "CloudWatchCreateLogGroup"
@@ -54,10 +54,10 @@ resource "aws_iam_policy" "ecs_task_cwlogs_policy" {
   })
 }
 
-resource "aws_iam_role_policy_attachment" "ecs_task_execution_cwlogs_attach" {
-  role = aws_iam_role.ecs_task_execution_role.id
-  policy_arn = aws_iam_policy.ecs_task_cwlogs_policy.arn
-}
+# resource "aws_iam_role_policy_attachment" "ecs_task_execution_cwlogs_attach" {
+#   role = aws_iam_role.ecs_task_execution_role.id
+#   policy_arn = aws_iam_policy.ecs_task_cwlogs_policy.arn
+# }
 
 # Attaching task execution and read from secrets manager policies to task execution role
 # resource "aws_iam_role_policy_attachment" "ecs_task_exec_role_attach" {
@@ -109,15 +109,15 @@ resource "aws_iam_policy" "ecs_task_get_secrets_policy" {
   })
 }
 
-resource "aws_iam_role_policy_attachment" "ecs_kong_task_manage_logs_attach" {
-  role = aws_iam_role.ecs_kong_task_role.name
-  policy_arn = aws_iam_policy.ecs_task_manage_logs_policy.arn
-}
+# resource "aws_iam_role_policy_attachment" "ecs_kong_task_manage_logs_attach" {
+#   role = aws_iam_role.ecs_kong_task_role.name
+#   policy_arn = aws_iam_policy.ecs_task_manage_logs_policy.arn
+# }
 
-resource "aws_iam_role_policy_attachment" "ecs_kong_get_secrets_attach" {
-  role = aws_iam_role.ecs_kong_task_role.name
-  policy_arn = aws_iam_policy.ecs_task_get_secrets_policy.arn
-}
+# resource "aws_iam_role_policy_attachment" "ecs_kong_get_secrets_attach" {
+#   role = aws_iam_role.ecs_kong_task_role.name
+#   policy_arn = aws_iam_policy.ecs_task_get_secrets_policy.arn
+# }
 
 resource "aws_iam_policy" "ecs_task_read_resources_policy" {
   name = "ECSReadResources"
@@ -141,12 +141,12 @@ resource "aws_iam_policy" "ecs_task_read_resources_policy" {
   })
 }
 
-resource "aws_iam_role_policy_attachment" "ecs_prom_task_manage_logs_attach" {
-  role = aws_iam_role.ecs_prom_task_role.name
-  policy_arn = aws_iam_policy.ecs_task_manage_logs_policy.arn
-}
+# resource "aws_iam_role_policy_attachment" "ecs_prom_task_manage_logs_attach" {
+#   role = aws_iam_role.ecs_prom_task_role.name
+#   policy_arn = aws_iam_policy.ecs_task_manage_logs_policy.arn
+# }
 
-resource "aws_iam_role_policy_attachment" "ecs_prom_task_read_resources_attach" {
-  role = aws_iam_role.ecs_prom_task_role.name
-  policy_arn = aws_iam_policy.ecs_task_read_resources_policy.arn
-}
+# resource "aws_iam_role_policy_attachment" "ecs_prom_task_read_resources_attach" {
+#   role = aws_iam_role.ecs_prom_task_role.name
+#   policy_arn = aws_iam_policy.ecs_task_read_resources_policy.arn
+# }
