@@ -1,6 +1,7 @@
 FROM kong:2.7.1
 
 USER root
+
 RUN apk add git
 
 ARG PLUGIN_VERSION=1.1.0-1
@@ -36,6 +37,9 @@ RUN luarocks install lua-resty-jwt 0.2.2-0 \
 
 RUN git clone https://github.com/Kong/priority-updater.git
 RUN (cd priority-updater/template/plugin && KONG_PRIORITY=902 KONG_PRIORITY_NAME=rate-limiting /usr/local/openresty/luajit/bin/luajit ../priority.lua)
+
+RUN mkdir /kong_prefix
+RUN chmod -R ug+rwx /kong_prefix
 
 USER kong
 

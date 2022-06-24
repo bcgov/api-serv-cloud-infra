@@ -85,7 +85,6 @@ resource "aws_ecs_task_definition" "kong-task" {
       essential      = true
       container_name = "kong"
       name           = "kong"
-      user           = 0
       image          = "${var.ecr_repository}/kong:${local.dev_versions.kong}"
       cpu            = 1024
       memory         = 4096
