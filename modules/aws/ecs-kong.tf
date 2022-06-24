@@ -356,7 +356,6 @@ resource "aws_ecs_task_definition" "kong-task" {
     name = "secret-vol"
   }
   volume {
-    name      = "dp-aws-kong-prefix-dir"
-    host_path = "/usr/local/kong"
+    name = "dp-aws-kong-prefix-dir"
   }
 }
