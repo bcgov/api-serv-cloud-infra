@@ -249,7 +249,7 @@ resource "aws_ecs_task_definition" "kong-task" {
         },
         {
           sourceVolume  = "dp-aws-kong-prefix-dir",
-          containerPath = "/kong_prefix/"
+          containerPath = "/usr/local/kong_prefix/"
         }
       ]
       volumesFrom = []
@@ -279,7 +279,7 @@ resource "aws_ecs_task_definition" "kong-task" {
         },
         {
           name  = "CACHE_FILE",
-          value = "/kong_prefix/config.cache.json.gz"
+          value = "/usr/local/kong_prefix/config.cache.json.gz"
         },
         {
           name  = "PORT",
