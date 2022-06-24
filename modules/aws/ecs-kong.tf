@@ -85,6 +85,7 @@ resource "aws_ecs_task_definition" "kong-task" {
       essential      = true
       container_name = "kong"
       name           = "kong"
+      user           = 0
       image          = "${var.ecr_repository}/kong:${local.dev_versions.kong}"
       cpu            = 1024
       memory         = 4096
@@ -227,6 +228,10 @@ resource "aws_ecs_task_definition" "kong-task" {
         {
           name  = "KONG_PROXY_ERROR_LOG",
           value = "/dev/stderr"
+        },
+        {
+          name  = "KONG_PREFIX",
+          value = "/kong_prefix/"
         }
       ]
       logConfiguration = {
@@ -245,7 +250,7 @@ resource "aws_ecs_task_definition" "kong-task" {
         },
         {
           sourceVolume  = "dp-aws-kong-prefix-dir",
-          containerPath = "/usr/local/kong"
+          containerPath = "/kong_prefix"
         }
       ]
       volumesFrom = []
@@ -275,7 +280,7 @@ resource "aws_ecs_task_definition" "kong-task" {
         },
         {
           name  = "CACHE_FILE",
-          value = "/usr/local/kong/config.cache.json.gz"
+          value = "/kong_prefix/config.cache.json.gz"
         },
         {
           name  = "PORT",
@@ -291,12 +296,13 @@ resource "aws_ecs_task_definition" "kong-task" {
           awslogs-stream-prefix = "ecs"
         }
       }
-      mountPoints = []
-      volumesFrom = [
+      mountPoints = [
         {
-          sourceContainer = "kong"
+          sourceVolume  = "dp-aws-kong-prefix-dir",
+          containerPath = "/kong_prefix"
         }
       ]
+      volumesFrom = []
       dependsOn = [{
         containerName = "kong",
         condition     = "START"
