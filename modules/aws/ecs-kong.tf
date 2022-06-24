@@ -41,13 +41,13 @@ resource "aws_ecs_task_definition" "kong-task" {
   tags                     = local.common_tags
   container_definitions = jsonencode([
     {
-      essential   = false
+      essential      = false
       container_name = "secrets-injector"
-      name        = "secrets-injector"
-      image       = "${var.ecr_repository}/aws-secrets-injector:${local.dev_versions.aws-secrets-injector}"
-      cpu         = 128
-      memory      = 256
-      networkMode = "awsvpc"
+      name           = "secrets-injector"
+      image          = "${var.ecr_repository}/aws-secrets-injector:${local.dev_versions.aws-secrets-injector}"
+      cpu            = 128
+      memory         = 256
+      networkMode    = "awsvpc"
       environment = [
         {
           name  = "LOG_LEVEL",
@@ -82,13 +82,13 @@ resource "aws_ecs_task_definition" "kong-task" {
       volumesFrom = []
     },
     {
-      essential   = true
+      essential      = true
       container_name = "kong"
-      name        = "kong"
-      image       = "${var.ecr_repository}/kong:${local.dev_versions.kong}"
-      cpu         = 1024
-      memory      = 4096
-      networkMode = "awsvpc"
+      name           = "kong"
+      image          = "${var.ecr_repository}/kong:${local.dev_versions.kong}"
+      cpu            = 1024
+      memory         = 4096
+      networkMode    = "awsvpc"
       portMappings = [
         {
           protocol      = "tcp"
@@ -243,19 +243,19 @@ resource "aws_ecs_task_definition" "kong-task" {
         containerPath = "/usr/local/kongh"
       }]
       volumesFrom = []
-      dependsOn   = [{
+      dependsOn = [{
         containerName = "secrets-injector",
         condition     = "COMPLETE"
       }]
     },
     {
-      essential   = false
+      essential      = false
       container_name = "dp-query-api"
-      name        = "dp-query-api"
-      image       = "${var.ecr_repository}/dp-query-api:${local.dev_versions.dp-query-api}"
-      cpu         = 128
-      memory      = 256
-      networkMode = "awsvpc"
+      name           = "dp-query-api"
+      image          = "${var.ecr_repository}/dp-query-api:${local.dev_versions.dp-query-api}"
+      cpu            = 128
+      memory         = 256
+      networkMode    = "awsvpc"
       portMappings = [
         {
           protocol      = "tcp"
@@ -290,19 +290,19 @@ resource "aws_ecs_task_definition" "kong-task" {
         containerPath = "/kong_prefix/"
       }]
       volumesFrom = []
-      dependsOn   = [{
+      dependsOn = [{
         containerName = "kong",
         condition     = "START"
       }]
     },
     {
-      essential   = false
+      essential      = false
       container_name = "prom-metrics-proxy"
-      name        = "prom-metrics-proxy"
-      image       = "${var.ecr_repository}/prom-metrics-proxy:${local.dev_versions.prom-metrics-proxy}"
-      cpu         = 128
-      memory      = 256
-      networkMode = "awsvpc"
+      name           = "prom-metrics-proxy"
+      image          = "${var.ecr_repository}/prom-metrics-proxy:${local.dev_versions.prom-metrics-proxy}"
+      cpu            = 128
+      memory         = 256
+      networkMode    = "awsvpc"
       portMappings = [
         {
           protocol      = "tcp"
@@ -312,11 +312,11 @@ resource "aws_ecs_task_definition" "kong-task" {
       environment = [
         {
           name  = "MYAPP_KONGURL",
-          value = "http://localhost:4000"
+          value = "http://0.0.0.0:4000"
         },
         {
           name  = "MYAPP_METRICSURL",
-          value = "http://localhost:8100"
+          value = "http://0.0.0.0:8100"
         },
         {
           name  = "MYAPP_PORT",
@@ -337,7 +337,7 @@ resource "aws_ecs_task_definition" "kong-task" {
         containerPath = "/kong_prefix/"
       }]
       volumesFrom = []
-      dependsOn   = [{
+      dependsOn = [{
         containerName = "kong",
         condition     = "START"
       }]
