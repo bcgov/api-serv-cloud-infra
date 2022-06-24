@@ -6,7 +6,6 @@ resource "aws_ecs_service" "adot_prom_collector" {
   desired_count                     = 1
   enable_ecs_managed_tags           = true
   propagate_tags                    = "TASK_DEFINITION"
-  health_check_grace_period_seconds = 60
   wait_for_steady_state             = false
 
   capacity_provider_strategy {
