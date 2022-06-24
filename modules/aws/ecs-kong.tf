@@ -230,7 +230,7 @@ resource "aws_ecs_task_definition" "kong-task" {
         },
         {
           name  = "KONG_PREFIX",
-          value = "/kong_prefix/"
+          value = "/usr/local/kong_prefix/"
         }
       ]
       logConfiguration = {
@@ -298,7 +298,7 @@ resource "aws_ecs_task_definition" "kong-task" {
       mountPoints = [
         {
           sourceVolume  = "dp-aws-kong-prefix-dir",
-          containerPath = "/kong_prefix/"
+          containerPath = "/usr/local/kong_prefix/"
         }
       ]
       volumesFrom = []
