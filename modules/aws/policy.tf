@@ -128,12 +128,12 @@ resource "aws_iam_policy" "ecs_task_read_resources_policy" {
       {
         "Effect": "Allow",
         "Action": [
-          "ECS:ListTasks",
-          "ECS:ListServices",
-          "ECS:DescribeContainerInstances",
-          "ECS:DescribeServices",
-          "ECS:DescribeTasks",
-          "ECS:DescribeTaskDefinition"
+          "ecs:ListTasks",
+          "ecs:ListServices",
+          "ecs:DescribeContainerInstances",
+          "ecs:DescribeServices",
+          "ecs:DescribeTasks",
+          "ecs:DescribeTaskDefinition"
         ],
         "Resource": "*"
       }

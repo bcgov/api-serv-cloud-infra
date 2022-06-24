@@ -1,0 +1,52 @@
+extensions:
+  ecs_observer: # extension type is ecs_observer
+    cluster_name: "ecs-kong" # cluster name need to configured manually
+    cluster_region: "ca-central-1" # region can be configured directly or use AWS_REGION env var
+    result_file: "/etc/ecs_sd_targets.yaml" # the directory for file must already exists
+    refresh_interval: 60s # format is https://golang.org/pkg/time/#ParseDuration
+    # custom name for 'job' so we can rename it back to 'job' using metricstransform processor
+    job_label_name: ecs_prometheus_job
+    docker_labels:
+      - port_label: "ECS_PROMETHEUS_EXPORTER_PORT"
+      - job_name_label: "ECS_PROMETHEUS_JOB_NAME"
+receivers:
+  prometheus:
+    config:
+      scrape_configs:
+        - job_name: "aws-kong"
+          metrics_path: /metrics
+          scrape_timeout: 10s
+          file_sd_configs:
+            - files:
+                - "/etc/ecs_sd_targets.yaml" # MUST match the file name in ecs_observer.result_file
+          relabel_configs: # Relabel here because label with __ prefix will be dropped by receiver.
+            - source_labels: [__meta_ecs_cluster_name] # ClusterName
+              action: replace
+              target_label: ClusterName
+            - source_labels: [__meta_ecs_service_name] # ServiceName
+              action: replace
+              target_label: ServiceName
+            - source_labels: [__meta_ecs_task_definition_family] # TaskDefinitionFamily
+              action: replace
+              target_label: TaskDefinitionFamily
+            - source_labels: [__meta_ecs_task_launch_type] # LaunchType
+              action: replace
+              target_label: LaunchType
+            - source_labels: [__meta_ecs_container_name] # container_name
+              action: replace
+              target_label: container_name
+            - action: labelmap # Convert docker labels on container to metric labels
+              regex: ^__meta_ecs_container_labels_(.+)$ # Capture the key using regex
+exporters:
+  prometheus:
+    endpoint: "https://prom-b8840c-dev.apps.gold.devops.gov.bc.ca"
+    namespace: b8840c-dev
+    const_labels:
+      instance: aws-kong-dp
+    send_timestamps: true
+service:
+  extensions: [ecs_observer]
+  pipelines:
+    metrics:
+      receivers: [prometheus]
+      exporters: [prometheus]
