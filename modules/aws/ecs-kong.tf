@@ -9,7 +9,6 @@ resource "aws_ecs_service" "kong" {
   health_check_grace_period_seconds = 60
   wait_for_steady_state             = false
 
-
   capacity_provider_strategy {
     capacity_provider = "FARGATE_SPOT"
     weight            = 100
@@ -27,9 +26,6 @@ resource "aws_ecs_service" "kong" {
     container_name   = "kong"
     container_port   = var.kong_port_http
   }
-
-  depends_on = [data.aws_lb_listener.https_listener_kong, aws_iam_role_policy_attachment.ecs_task_role_policy_attachment]
-
   tags = local.common_tags
 }
 
@@ -37,7 +33,7 @@ resource "aws_ecs_task_definition" "kong-task" {
   count                    = 1
   family                   = "kong"
   execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
-  task_role_arn            = aws_iam_role.kong_container_role.arn
+  task_role_arn            = aws_iam_role.ecs_kong_task_role.arn
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
   cpu                      = var.fargate_cpu
@@ -341,6 +337,11 @@ resource "aws_ecs_task_definition" "kong-task" {
         containerName = "kong",
         condition     = "START"
       }]
+      tags = {
+        ECS_PROMETHEUS_EXPORTER_PORT = "3001"
+        ECS_PROMETHEUS_JOB_NAME      = "kong-dp"
+      }
+
     }
   ])
   volume {
