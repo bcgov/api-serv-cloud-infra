@@ -29,6 +29,14 @@ resource "aws_security_group" "sg_ecs_service_kong" {
     security_groups = [data.aws_security_group.sg_kong.id]
   }
 
+  ingress {
+    description     = "From Adot Prom Collector"
+    protocol        = "tcp"
+    from_port       = 0
+    to_port         = 65535
+    security_groups = [aws_security_group.sg_ecs_adot_prom_collector.id]
+  }
+
   egress {
     description = "All outbound"
     protocol    = "-1"
@@ -57,8 +65,16 @@ resource "aws_security_group" "sg_kong_redis" {
   tags = var.common_tags
 }
 
-resource "aws_security_group" "sg_ecs_service_prom" {
-  name        = "prom-ecs-sg"
-  description = "ECS Prometheus"
+resource "aws_security_group" "sg_ecs_adot_prom_collector" {
+  name        = "sg_ecs_adot_prom_collector"
+  description = "ECS Adot Prometheus Collector"
   vpc_id      = module.network.aws_vpc.id
+
+  egress {
+    description = "All outbound"
+    protocol    = "-1"
+    from_port   = 0
+    to_port     = 0
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 }
