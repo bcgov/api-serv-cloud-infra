@@ -49,6 +49,29 @@ The following components are to be deployed
 - Run `terragrunt run-all validate` to validate the terraform code
 - Run `terragrunt run-all plan` to create a plan for all the environments. Append `--terragrunt-working-dir ./terraform/dev/` to scope plan for dev
 
+## Logging into ECS Fargate Container
+
+```bash
+# Install session manager plugin 
+# https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html
+# For Ubuntu/WSL
+curl "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/ubuntu_64bit/session-manager-plugin.deb" -o "session-manager-plugin.deb"
+
+sudo dpkg -i session-manager-plugin.deb
+
+# Run this command and it should return (The Session Manager plugin was installed successfully. Use the AWS CLI to start a session.)
+session-manager-plugin
+
+# Update the Service
+aws ecs update-service --cluster ecs-kong --service kong --region ca-central-1 --enable-execute-command --force-new-deployment > /dev/null
+
+# Fetch task id from AWS Console and replace with TASK_ID
+aws ecs describe-tasks --cluster ecs-kong --tasks <TASK_ID>
+
+aws ecs execute-command --cluster ecs-kong --task 2d5a9dce3c0940edbb1172a40f61b9e
+5 --container prom-metrics-proxy --interactive --command "/bin/bash"
+```
+
 ## Getting Help or Reporting an Issue
 <!--- Example below, modify accordingly --->
 To report bugs/issues/feature requests, please file an [issue](../../issues).
