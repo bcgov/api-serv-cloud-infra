@@ -39,6 +39,7 @@ RUN (cd priority-updater/template/plugin && KONG_PRIORITY=902 KONG_PRIORITY_NAME
 
 RUN mkdir /kong_prefix
 RUN chown -R kong: /kong_prefix
+VOLUME /kong_prefix
 
 USER kong
 
