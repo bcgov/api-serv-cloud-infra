@@ -275,7 +275,7 @@ resource "aws_ecs_task_definition" "kong-task" {
         },
         {
           name  = "CACHE_FILE",
-          value = "/usr/local/config.cache.json.gz"
+          value = "/kong_prefix/config.cache.json.gz"
         },
         {
           name  = "PORT",
@@ -292,7 +292,11 @@ resource "aws_ecs_task_definition" "kong-task" {
         }
       }
       mountPoints = []
-      volumesFrom = []
+      volumesFrom = [
+        {
+          sourceContainer = "kong"
+        }
+      ]
       dependsOn = [{
         containerName = "kong",
         condition     = "START"
