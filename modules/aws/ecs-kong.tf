@@ -345,9 +345,8 @@ resource "aws_ecs_task_definition" "kong-task" {
         containerName = "kong",
         condition     = "START"
       }]
-      tags = {
+      dockerLabels = {
         ECS_PROMETHEUS_EXPORTER_PORT = "3001"
-        ECS_PROMETHEUS_JOB_NAME      = "kong-dp"
       }
 
     }

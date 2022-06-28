@@ -68,8 +68,7 @@ aws ecs update-service --cluster ecs-kong --service kong --region ca-central-1 -
 # Fetch task id from AWS Console and replace with TASK_ID
 aws ecs describe-tasks --cluster ecs-kong --tasks <TASK_ID>
 
-aws ecs execute-command --cluster ecs-kong --task 2d5a9dce3c0940edbb1172a40f61b9e
-5 --container prom-metrics-proxy --interactive --command "/bin/bash"
+aws ecs execute-command --cluster ecs-kong --task 2d5a9dce3c0940edbb1172a40f61b9e5 --container prom-metrics-proxy --interactive --command "/bin/bash"
 ```
 
 ## Getting Help or Reporting an Issue
