@@ -18,6 +18,13 @@ resource "aws_ecs_service" "adot_prom_collector" {
     subnets          = module.network.aws_subnet_ids.app.ids
     assign_public_ip = false
   }
+
+  load_balancer {
+    target_group_arn = aws_lb_target_group.tg_adot_collector.id
+    container_name   = "adot-prom-collector"
+    container_port   = var.adot_collector_port
+  }
+
   tags = local.common_tags
 }
 
@@ -40,7 +47,7 @@ resource "aws_ecs_task_definition" "adot_prom_collector_task" {
     portMappings = [
       {
         protocol      = "tcp"
-        containerPort = "${var.adot_collector_port}"
+        containerPort = var.adot_collector_port
       }
     ]
     secrets = [
