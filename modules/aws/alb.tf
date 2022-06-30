@@ -92,6 +92,17 @@ resource "aws_lb_target_group" "tg_adot_collector" {
   target_type          = "ip"
   deregistration_delay = 30
 
+  health_check {
+    healthy_threshold   = "2"
+    interval            = "5"
+    protocol            = "HTTP"
+    matcher             = "200"
+    timeout             = "3"
+    path                = "/metrics"
+    port                = var.adot_collector_port
+    unhealthy_threshold = "2"
+  }
+
   tags = local.common_tags
 }
 
