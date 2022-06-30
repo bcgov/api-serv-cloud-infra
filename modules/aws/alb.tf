@@ -6,13 +6,27 @@ data "aws_alb" "main" {
   name = var.alb_name
 }
 
-########################APS Kong START##################################
-
-# Redirect all traffic from the ALB to the target group
-data "aws_lb_listener" "https_listener_kong" {
+data "aws_lb_listener" "https_listener" {
   load_balancer_arn = data.aws_alb.main.id
   port              = 443
 }
+
+resource "aws_lb_listener" "http_listener" {
+  load_balancer_arn = data.aws_alb.main.id
+  port              = "80"
+  protocol          = "HTTP"
+
+  default_action {
+    type = "fixed-response"
+
+    fixed_response {
+      content_type = "application/json"
+      status_code  = "404"
+    }
+  }
+}
+
+########################APS Kong START##################################
 
 resource "aws_lb_target_group" "tg_kong" {
   name                 = "tg-kong"
@@ -36,19 +50,23 @@ resource "aws_lb_target_group" "tg_kong" {
   tags = local.common_tags
 }
 
-resource "aws_lb_listener" "http_listener_kong" {
-  load_balancer_arn = data.aws_alb.main.id
-  port              = "80"
-  protocol          = "HTTP"
+resource "aws_lb_listener_rule" "forward_http_kong" {
+  listener_arn = aws_lb_listener.http_listener.arn
 
-  default_action {
+  action {
     type             = "forward"
     target_group_arn = aws_lb_target_group.tg_kong.arn
+  }
+
+  condition {
+    path_pattern {
+      values = ["/"]
+    }
   }
 }
 
 resource "aws_lb_listener_rule" "forward_https_kong" {
-  listener_arn = data.aws_lb_listener.https_listener_kong.arn
+  listener_arn = data.aws_lb_listener.https_listener.arn
 
   action {
     type             = "forward"
@@ -78,7 +96,7 @@ resource "aws_lb_target_group" "tg_adot_collector" {
 }
 
 resource "aws_lb_listener_rule" "forward_http_prometheus" {
-  listener_arn = data.aws_lb_listener.https_listener_kong.arn
+  listener_arn = aws_lb_listener.http_listener.arn
 
   action {
     type             = "forward"

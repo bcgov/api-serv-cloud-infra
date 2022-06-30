@@ -77,16 +77,14 @@ resource "aws_security_group" "sg_kong_redis" {
 
 resource "aws_security_group" "sg_ecs_adot_prom_collector" {
   name        = "sg_ecs_adot_prom_collector"
-  description = "ECS Adot Prometheus Collector"
+  description = "Adot Prometheus Collector"
   vpc_id      = module.network.aws_vpc.id
 
   ingress {
-    description = "Only from alb"
-    protocol    = "tcp"
-    from_port   = var.adot_collector_port
-    to_port     = var.adot_collector_port
-    # security_groups enlists other security groups as source to use the IP addresses of the resources associated with them. 
-    # This does not add rules from the specified security group to the current security group
+    description     = "Only from alb"
+    protocol        = "tcp"
+    from_port       = var.adot_collector_port
+    to_port         = var.adot_collector_port
     security_groups = [data.aws_security_group.sg_kong.id]
   }
 
