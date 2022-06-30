@@ -73,9 +73,14 @@ variable "redis_port_http" {
   default     = 6379
 }
 
-variable "prom_port_http" {
+variable "prom_metrics_port" {
   description = "Prometheus port"
-  default     = 9090
+  default     = 3001
+}
+
+variable "adot_collector_port" {
+  description = "ADOT Collector port"
+  default     = 4317
 }
 
 variable "service_names" {

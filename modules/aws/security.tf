@@ -5,6 +5,8 @@ data "aws_security_group" "sg_kong" {
   name = "Web_sg"
 }
 
+########################APS Kong START###########################
+
 # Traffic to the ECS cluster should only come from the ALB
 resource "aws_security_group" "sg_ecs_service_kong" {
   name        = "kong-ecs-sg"
@@ -12,10 +14,10 @@ resource "aws_security_group" "sg_ecs_service_kong" {
   vpc_id      = module.network.aws_vpc.id
 
   ingress {
-    description     = "Only from alb"
-    protocol        = "tcp"
-    from_port       = var.kong_port_http
-    to_port         = var.kong_port_http
+    description = "Only from alb"
+    protocol    = "tcp"
+    from_port   = var.kong_port_http
+    to_port     = var.kong_port_http
     # security_groups enlists other security groups as source to use the IP addresses of the resources associated with them. 
     # This does not add rules from the specified security group to the current security group
     security_groups = [data.aws_security_group.sg_kong.id]
@@ -48,6 +50,10 @@ resource "aws_security_group" "sg_ecs_service_kong" {
   tags = local.common_tags
 }
 
+########################APS Kong END###########################
+
+########################APS Redis START########################
+
 # Traffic to the AWS ElasticCache
 resource "aws_security_group" "sg_kong_redis" {
   name        = "kong-redis-sg"
@@ -65,10 +71,24 @@ resource "aws_security_group" "sg_kong_redis" {
   tags = var.common_tags
 }
 
+########################APS Redis END##########################
+
+########################APS ADOT PROM START####################
+
 resource "aws_security_group" "sg_ecs_adot_prom_collector" {
   name        = "sg_ecs_adot_prom_collector"
   description = "ECS Adot Prometheus Collector"
   vpc_id      = module.network.aws_vpc.id
+
+  ingress {
+    description = "Only from alb"
+    protocol    = "tcp"
+    from_port   = var.adot_collector_port
+    to_port     = var.adot_collector_port
+    # security_groups enlists other security groups as source to use the IP addresses of the resources associated with them. 
+    # This does not add rules from the specified security group to the current security group
+    security_groups = [data.aws_security_group.sg_kong.id]
+  }
 
   egress {
     description = "All outbound"
@@ -78,3 +98,5 @@ resource "aws_security_group" "sg_ecs_adot_prom_collector" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
+
+########################APS ADOT PROM END######################

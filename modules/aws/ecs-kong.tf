@@ -313,7 +313,7 @@ resource "aws_ecs_task_definition" "kong-task" {
       portMappings = [
         {
           protocol      = "tcp"
-          containerPort = 3001
+          containerPort = var.prom_metrics_port
         }
       ]
       environment = [
@@ -327,7 +327,7 @@ resource "aws_ecs_task_definition" "kong-task" {
         },
         {
           name  = "MYAPP_PORT",
-          value = "3001"
+          value = tostring(var.prom_metrics_port)
         }
       ]
       logConfiguration = {
@@ -346,7 +346,7 @@ resource "aws_ecs_task_definition" "kong-task" {
         condition     = "START"
       }]
       dockerLabels = {
-        ECS_PROMETHEUS_EXPORTER_PORT = "3001"
+        ECS_PROMETHEUS_EXPORTER_PORT = tostring(var.prom_metrics_port)
       }
 
     }

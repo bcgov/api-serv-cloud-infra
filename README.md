@@ -39,13 +39,17 @@ The following components are to be deployed
 
 ### Locally
 
+- Copy the token from `/systems-manager/parameters/octk/tfc/team-token`
 - Create `.terraformrc` and configure tfc team token
-  ```yaml
+
+  ```json
   credentials "app.terraform.io" {
    token = "<TFC_TEAM_TOKEN>"
   }
   ```
+
 - Save path of `.terraformrc` in an env var - `export TF_CLI_CONFIG_FILE=<PATH_TO_TERRAFORMRC>`
+- Run `terragrunt init` from each module directory to initialize plugins
 - Run `terragrunt run-all validate` to validate the terraform code
 - Run `terragrunt run-all plan` to create a plan for all the environments. Append `--terragrunt-working-dir ./terraform/dev/` to scope plan for dev
 
@@ -69,6 +73,15 @@ aws ecs update-service --cluster ecs-kong --service kong --region ca-central-1 -
 aws ecs describe-tasks --cluster ecs-kong --tasks <TASK_ID>
 
 aws ecs execute-command --cluster ecs-kong --task 2d5a9dce3c0940edbb1172a40f61b9e5 --container prom-metrics-proxy --interactive --command "/bin/bash"
+```
+
+## Troubleshooting
+
+### Plugin reinitialization required
+
+```bash
+cd ./terraform/dev
+terragrunt init
 ```
 
 ## Getting Help or Reporting an Issue

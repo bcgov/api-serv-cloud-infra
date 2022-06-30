@@ -6,6 +6,8 @@ data "aws_alb" "main" {
   name = var.alb_name
 }
 
+########################APS Kong START##################################
+
 # Redirect all traffic from the ALB to the target group
 data "aws_lb_listener" "https_listener_kong" {
   load_balancer_arn = data.aws_alb.main.id
@@ -59,3 +61,31 @@ resource "aws_lb_listener_rule" "forward_https_kong" {
     }
   }
 }
+
+########################APS Kong END##################################
+
+########################APS ADOT Prom START###########################
+
+resource "aws_lb_target_group" "tg_adot_collector" {
+  name                 = "tg-adot-collector"
+  port                 = var.adot_collector_port
+  protocol             = "HTTP"
+  vpc_id               = module.network.aws_vpc.id
+  target_type          = "ip"
+  deregistration_delay = 30
+
+  tags = local.common_tags
+}
+
+resource "aws_lb_listener" "http_listener_prom" {
+  load_balancer_arn = data.aws_alb.main.id
+  port              = "80"
+  protocol          = "HTTP"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.tg_adot_collector.arn
+  }
+}
+
+########################APS ADOT Prom END###########################

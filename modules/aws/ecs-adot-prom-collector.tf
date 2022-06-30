@@ -1,12 +1,12 @@
 resource "aws_ecs_service" "adot_prom_collector" {
-  count                             = 1
-  name                              = "adot_prom_collector"
-  cluster                           = aws_ecs_cluster.main.id
-  task_definition                   = aws_ecs_task_definition.adot_prom_collector_task[count.index].arn
-  desired_count                     = 1
-  enable_ecs_managed_tags           = true
-  propagate_tags                    = "TASK_DEFINITION"
-  wait_for_steady_state             = false
+  count                   = 1
+  name                    = "adot_prom_collector"
+  cluster                 = aws_ecs_cluster.main.id
+  task_definition         = aws_ecs_task_definition.adot_prom_collector_task[count.index].arn
+  desired_count           = 1
+  enable_ecs_managed_tags = true
+  propagate_tags          = "TASK_DEFINITION"
+  wait_for_steady_state   = false
 
   capacity_provider_strategy {
     capacity_provider = "FARGATE_SPOT"
@@ -32,14 +32,20 @@ resource "aws_ecs_task_definition" "adot_prom_collector_task" {
   memory                   = 512
   tags                     = local.common_tags
   container_definitions = jsonencode([{
-    essential   = true
+    essential      = true
     container_name = "adot-prom-collector"
-    name        = "adot-prom-collector"
-    image       = "amazon/aws-otel-collector:v0.11.0"
-    networkMode = "awsvpc"
+    name           = "adot-prom-collector"
+    image          = "amazon/aws-otel-collector:v0.11.0"
+    networkMode    = "awsvpc"
+    portMappings = [
+      {
+        protocol      = "tcp"
+        containerPort = "${var.adot_collector_port}"
+      }
+    ]
     secrets = [
       {
-        name  = "AOT_CONFIG_CONTENT",
+        name      = "AOT_CONFIG_CONTENT",
         valueFrom = "otel-collector-config"
       }
     ]
