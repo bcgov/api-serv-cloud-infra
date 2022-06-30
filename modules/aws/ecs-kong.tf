@@ -14,7 +14,6 @@ resource "aws_ecs_service" "kong" {
     weight            = 100
   }
 
-
   network_configuration {
     security_groups  = [aws_security_group.sg_ecs_service_kong.id]
     subnets          = module.network.aws_subnet_ids.app.ids

@@ -76,8 +76,8 @@ resource "aws_security_group" "sg_kong_redis" {
 ########################APS ADOT PROM START####################
 
 resource "aws_security_group" "sg_ecs_adot_prom_collector" {
-  name        = "sg_ecs_adot_prom_collector"
-  description = "Adot Prometheus Collector"
+  name        = "adot-prom-collector-ecs-sg"
+  description = "Adot Prometheus Collector Security Group"
   vpc_id      = module.network.aws_vpc.id
 
   ingress {
