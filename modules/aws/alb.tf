@@ -77,14 +77,18 @@ resource "aws_lb_target_group" "tg_adot_collector" {
   tags = local.common_tags
 }
 
-resource "aws_lb_listener" "http_listener_prom" {
-  load_balancer_arn = data.aws_alb.main.id
-  port              = "80"
-  protocol          = "HTTP"
+resource "aws_lb_listener_rule" "forward_http_prometheus" {
+  listener_arn = data.aws_lb_listener.https_listener_kong.arn
 
-  default_action {
+  action {
     type             = "forward"
     target_group_arn = aws_lb_target_group.tg_adot_collector.arn
+  }
+
+  condition {
+    path_pattern {
+      values = ["/metrics"]
+    }
   }
 }
 
