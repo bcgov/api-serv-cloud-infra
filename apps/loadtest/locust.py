@@ -12,18 +12,18 @@ class Tester(HttpUser):
 
     @tag('post')
     @task
-    def make_get_request(self):
+    def make_post_request(self):
         self.client.verify = False
         self.client.post("/post")
 
     @tag('put')
     @task
-    def make_get_request(self):
+    def make_put_request(self):
         self.client.verify = False
         self.client.put("/put")
 
     @tag('delete')
     @task
-    def make_get_request(self):
+    def make_delete_request(self):
         self.client.verify = False
         self.client.delete("/delete")
