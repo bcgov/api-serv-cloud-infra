@@ -23,7 +23,7 @@ resource "aws_apigatewayv2_integration" "aps_kong_gateway_integration" {
 
 resource "aws_apigatewayv2_route" "aps_kong_gateway_route" {
   api_id    = aws_apigatewayv2_api.aps_kong_gateway_api.id
-  route_key = "ANY /"
+  route_key = "ANY /{proxy+}"
   target    = "integrations/${aws_apigatewayv2_integration.aps_kong_gateway_integration.id}"
 }
 
