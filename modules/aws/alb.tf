@@ -59,8 +59,8 @@ resource "aws_lb_listener_rule" "forward_http_kong" {
   }
 
   condition {
-    path_pattern {
-      values = ["/"]
+    host_header {
+      values = [format("%s.*", aws_apigatewayv2_api.aps_kong_gateway_api.id)]
     }
   }
 }
