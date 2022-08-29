@@ -97,6 +97,37 @@ Please note that this project is released with a [Contributor Code of Conduct](.
 By participating in this project you agree to abide by its terms.
 
 
+## Decommissioning Project
+
+Complete steps in `Installation.Locally` section up to and including the `Save path of .terraformrc...` step before proceeding.
+
+### Dev
+
+Run:
+
+```sh
+cd terraform/dev
+terragrunt init
+```
+
+Once that is complete, run:
+
+```sh
+terragrunt run-all destroy
+```
+
+This will destroy all resources in our AWS dev environment.
+
+#### Rebuilding Dev Project
+
+An initial deployment to create some resources was completed before hand.
+
+Inside `./modules/aws/policy.tf`, comment out all `"aws_iam_role_policy_attachment"` Resource sections. Eg: `"ecs_task_exec_role_attach"`, `"ecs_kong_task_role_attach"`, etc.
+
+Once complete, save the file, then run: `./terraform/dev $ terragrunt run-all apply`
+
+If the deployment is successful, uncomment `"aws_iam_role_policy_attachment"` Resouces from the earlier steps. Save file, then rerun `terragrun run-all apply`. This will create/modify some additional resources. Once complete, the project should be in a working state.
+
 ## License
 <!--- Example below, modify accordingly --->
     Copyright 2018 Province of British Columbia
