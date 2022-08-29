@@ -35,7 +35,7 @@ resource "aws_ecs_task_definition" "adot_prom_collector_task" {
   task_role_arn            = aws_iam_role.ecs_prom_task_role.arn
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
-  cpu                      = 256
+  cpu                      = 128
   memory                   = 512
   tags                     = local.common_tags
   container_definitions = jsonencode([{
