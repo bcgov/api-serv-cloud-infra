@@ -1,4 +1,15 @@
-## Decommissioning AWS Project
+# Decommissioning AWS Project
+
+## Secrets
+
+If not created during deployment, a few secrets may need to be created. For dev, the value of these secrets can be found in our OpenShift Silver dev environment. The secret name and location of values:
+
+- `kongh-cluster-tls-key` : kongh-cluster-cert > tls.key
+- `kongh-cluster-tls-crt` : kongh-cluster-cert > tls.crt
+- `kongh-cluster-ca-crt` : kongh-cluster-ca > ca.crt
+- `plugins-ratelimiting-redis-password` : redis > redis-password
+
+## Next Steps
 
 Complete steps in `./README.md`, section: `Installation.Locally` up to and including the `Save path of .terraformrc...` step before proceeding.
 
@@ -29,7 +40,7 @@ An initial deployment to create some resources was completed beforehand:
 
 If the deployment is successful:
 
-- Uncomment `"aws_iam_role_policy_attachment"` Resouces from the earlier steps.
-- Save file, then rerun `terragrun run-all apply`. This will create/modify some additional resources.
+- Uncomment `"aws_iam_role_policy_attachment"` Resouces from the earlier step.
+- Save file, then rerun `terragrunt run-all apply`. This will create/modify some additional resources.
 
-Once complete, the project should be in a working state and can be deployed using GitHub workflow files.
+Once complete, the project should be in a working state and can be deployed using standard GitHub Actions workflow.
